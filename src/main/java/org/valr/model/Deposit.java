@@ -10,9 +10,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 public class Deposit {
-    Currency currency;
-    BigDecimal amount;
-    Instant executed = Instant.now();
+    final Currency currency;
+    final BigDecimal amount;
+    final Instant executed = Instant.now();
 }
