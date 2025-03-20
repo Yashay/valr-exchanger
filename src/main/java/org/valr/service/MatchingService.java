@@ -14,14 +14,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
 // [TODO] Add trade service, add test for one branch, add code for canceling GTC, FOK
 public class MatchingService {
     private final OrderBookRepository orderBookRepository;
-    private final TradeService tradeService;
-    private final BalanceService balanceService;
 
     @Inject
-    public MatchingService(OrderBookRepository orderBookRepository, TradeService tradeService, BalanceService balanceService) {
-        this.balanceService = balanceService;
+    public MatchingService(OrderBookRepository orderBookRepository) {
         this.orderBookRepository = orderBookRepository;
-        this.tradeService = tradeService;
     }
 
     // PUBLIC for testing purposes
@@ -46,64 +42,5 @@ public class MatchingService {
         }
         //TODO To execute FOK we need to know if the entire order can be filled immediately
         return Pair.of(pools, isCompletelyFillable);
-    }
-
-    public void executeMatches(Order takerOrder, ConcurrentSkipListSet<Pool> validVolumePools) {
-        for (Pool currentPool : validVolumePools) {
-            for (Order makerOrder : currentPool.getOrders()) {
-                if (takerOrder.getQuantity().compareTo(BigDecimal.ZERO) == 0) break;
-
-                BigDecimal tradableQuantity = takerOrder.getQuantity().min(makerOrder.getQuantity());
-
-                handleBalances(takerOrder, makerOrder, tradableQuantity);
-                updateOrderQuantities(takerOrder, makerOrder, tradableQuantity);
-            }
-        }
-    }
-
-    private void handleBalances(Order takerOrder, Order makerOrder, BigDecimal tradableQuantity) {
-        BigDecimal takerTotalPrice = tradableQuantity.multiply(takerOrder.getPrice());
-        BigDecimal makerTotalPrice = tradableQuantity.multiply(makerOrder.getPrice());
-
-        if (takerOrder.getSide() == Side.BUY) {
-            balanceService.unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), takerTotalPrice);
-            balanceService.subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalPrice);
-
-            balanceService.unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
-            balanceService.subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
-
-            balanceService.add(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-            balanceService.add(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-
-        } else { // Side.SELL
-            balanceService.unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-            balanceService.subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-
-            balanceService.unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-            balanceService.subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-
-            balanceService.add(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalPrice);
-            balanceService.add(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
-        }
-    }
-
-    private void updateOrderQuantities(Order takerOrder, Order makerOrder, BigDecimal tradableQuantity) {
-        takerOrder.reduceQuantity(tradableQuantity);
-        makerOrder.reduceQuantity(tradableQuantity);
-
-        orderBookRepository.getPoolByOrder(takerOrder)
-                .ifPresent(pool -> pool.reduceQuantity(tradableQuantity));
-
-        orderBookRepository.getPoolByOrder(makerOrder)
-                .ifPresent(pool -> pool.reduceQuantity(tradableQuantity));
-
-        removeIfZero(takerOrder);
-        removeIfZero(makerOrder);
-    }
-
-    private void removeIfZero(Order order) {
-        if (order.getQuantity().compareTo(BigDecimal.ZERO) == 0) {
-            orderBookRepository.removeOrder(order);
-        }
     }
 }
