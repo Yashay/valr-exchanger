@@ -1,6 +1,5 @@
 package org.valr.model;
 
-import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,16 +48,6 @@ public class Pool implements Comparable<Pool> {
     public void removeOrder(Order order) {
         orders.remove(order);
         volume.getAndUpdate(o -> o.subtract(order.getQuantity()));
-    }
-
-    public JsonObject toJson() {
-        JsonObject poolJson = new JsonObject();
-        poolJson.put("side", getSide());
-        poolJson.put("quantity", getVolume());
-        poolJson.put("price", getPrice());
-        poolJson.put("currencyPair", getCurrencyPair());
-        poolJson.put("orderCount", getOrders().size());
-        return poolJson;
     }
 
     @Override

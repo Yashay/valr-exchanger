@@ -1,6 +1,5 @@
 package org.valr.model;
 
-import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -49,18 +48,6 @@ public class Trade implements Comparable<Trade> {
         this.takerSide = takerOrder.getSide();
         this.makerSide = makerOrder.getSide();
         this.currenyExchangePair = takerOrder.getExchangePair();
-    }
-
-    public JsonObject toJson() {
-        JsonObject tradeJson = new JsonObject();
-        tradeJson.put("price", getPrice());
-        tradeJson.put("quantity", getQuantity());
-        tradeJson.put("currencyPair", getCurrenyExchangePair());
-        tradeJson.put("tradedAt", getTradedAt());
-        tradeJson.put("takerSide", getTakerSide());
-        tradeJson.put("id", getTradeId());
-        tradeJson.put("quoteVolume", getQuoteVolume());
-        return tradeJson;
     }
 
     @Override
