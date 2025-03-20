@@ -3,117 +3,164 @@ package org.valr.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.valr.model.Balance;
+import org.valr.model.Order;
+import org.valr.model.enums.Currency;
+import org.valr.model.enums.Side;
 import org.valr.repository.BalanceRepository;
 
 import java.math.BigDecimal;
+import java.util.EnumMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.valr.TestHelper.NUMBER;
+import static org.valr.TestHelper.createOrder;
 
 class BalanceServiceTest {
 
     private BalanceService balanceService;
     private BalanceRepository balanceRepository;
+    private Balance userBalance;
 
     @BeforeEach
     void setUp() {
         balanceRepository = mock(BalanceRepository.class);
         balanceService = new BalanceService(balanceRepository);
+        userBalance = mockUserBalance("userId", NUMBER(0), NUMBER(0));
     }
 
     @Test
-    void testGetUserBalanceReturnsBalance() {
-        String userId = "user123";
-        Balance expectedBalance = new Balance(userId, BigDecimal.valueOf(100), BigDecimal.valueOf(1));
+    void testAddBalance() {
+        balanceService.add("userId", Currency.BTC, NUMBER(1));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(expectedBalance);
+        assertEquals(NUMBER(1), userBalance.getCurrentBalances().get(Currency.BTC));
 
-        Balance result = balanceService.getUserBalance(userId);
-
-        assertNotNull(result);
-        assertEquals(expectedBalance, result);
-        verify(balanceRepository).getBalance(userId);
+        balanceService.add("userId", Currency.BTC, NUMBER(3));
+        assertEquals(NUMBER(4), userBalance.getCurrentBalances().get(Currency.BTC));
     }
 
     @Test
-    void testAddFiatIncreasesFiatBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.valueOf(100), BigDecimal.ZERO);
+    void testSubtractBalance() {
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
+        balanceService.subtract("userId", Currency.ZAR, NUMBER(200));
+        assertEquals(NUMBER(800), userBalance.getCurrentBalances().get(Currency.ZAR));
 
-        balanceService.addFiat(userId, BigDecimal.valueOf(50));
-
-        assertEquals(BigDecimal.valueOf(150), balance.getFiatBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
+        balanceService.subtract("userId", Currency.ZAR, NUMBER(900));
+        assertEquals(NUMBER(-100), userBalance.getCurrentBalances().get(Currency.ZAR));
     }
 
     @Test
-    void testAddCryptoIncreasesCryptoBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.ZERO, BigDecimal.valueOf(0.5));
+    void testReserveBalance_Success() {
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
-
-        balanceService.addCrypto(userId, BigDecimal.valueOf(0.25));
-
-        assertEquals(BigDecimal.valueOf(0.75), balance.getCryptoBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
-    }
-
-    @Test
-    void testDeductFiatSucceedsWhenEnoughBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.valueOf(200), BigDecimal.ZERO);
-
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
-
-        boolean result = balanceService.deductFiat(userId, BigDecimal.valueOf(50));
+        boolean result = balanceService.reserve("userId", Currency.ZAR, NUMBER(500));
 
         assertTrue(result);
-        assertEquals(BigDecimal.valueOf(150), balance.getFiatBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
+        assertEquals(NUMBER(500), userBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(500), userBalance.getReserveBalances().get(Currency.ZAR));
     }
 
     @Test
-    void testDeductFiatFailsWhenInsufficientBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.valueOf(30), BigDecimal.ZERO);
+    void testReserveBalance_FailDueToInsufficientFunds() {
+        balanceService.add("userId", Currency.ZAR, NUMBER(100));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
-
-        boolean result = balanceService.deductFiat(userId, BigDecimal.valueOf(50));
+        boolean result = balanceService.reserve("userId", Currency.ZAR, NUMBER(200));
 
         assertFalse(result);
-        assertEquals(BigDecimal.valueOf(30), balance.getFiatBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
+        assertEquals(NUMBER(100), userBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(0), userBalance.getReserveBalances().get(Currency.ZAR));
     }
 
     @Test
-    void testDeductCryptoSucceedsWhenEnoughBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.ZERO, BigDecimal.valueOf(2.5));
+    void testUnreserveBalance_Success() {
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
+        balanceService.reserve("userId", Currency.ZAR, NUMBER(500));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
-
-        boolean result = balanceService.deductCrypto(userId, BigDecimal.valueOf(1.0));
+        boolean result = balanceService.unreserve("userId", Currency.ZAR, NUMBER(200));
 
         assertTrue(result);
-        assertEquals(BigDecimal.valueOf(1.5), balance.getCryptoBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
+        assertEquals(NUMBER(700), userBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(300), userBalance.getReserveBalances().get(Currency.ZAR));
     }
 
     @Test
-    void testDeductCryptoFailsWhenInsufficientBalance() {
-        String userId = "user123";
-        Balance balance = new Balance(userId, BigDecimal.ZERO, BigDecimal.valueOf(0.3));
+    void testUnreserveBalance_FailDueToInsufficientReservedFunds() {
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
+        balanceService.reserve("userId", Currency.ZAR, NUMBER(300));
 
-        when(balanceRepository.getBalance(userId)).thenReturn(balance);
-
-        boolean result = balanceService.deductCrypto(userId, BigDecimal.valueOf(1.0));
+        boolean result = balanceService.unreserve("userId", Currency.ZAR, NUMBER(500));
 
         assertFalse(result);
-        assertEquals(BigDecimal.valueOf(0.3), balance.getCryptoBalance());
-        verify(balanceRepository, times(1)).getBalance(userId);
+        assertEquals(NUMBER(700), userBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(300), userBalance.getReserveBalances().get(Currency.ZAR));
+    }
+
+    @Test
+    void testReserveOnOrder_BuyOrder() {
+        Order order = createOrder("userId", Side.BUY, NUMBER(100), NUMBER(10));
+
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
+
+        boolean result = balanceService.reserveOnOrder(order);
+
+        assertTrue(result);
+        assertEquals(NUMBER(1000), userBalance.getReserveBalances().get(Currency.ZAR));
+    }
+
+    @Test
+    void testUnreserveOnOrder_BuyOrder() {
+        Order order = createOrder("userId", Side.BUY, NUMBER(500), NUMBER(2));
+
+        balanceService.add("userId", Currency.ZAR, NUMBER(1000));
+        balanceService.reserveOnOrder(order);
+
+        boolean result = balanceService.unreserveOnOrder(order);
+
+        assertTrue(result);
+        assertEquals(NUMBER(1000), userBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(0), userBalance.getReserveBalances().get(Currency.ZAR));
+    }
+
+    @Test
+    void testAdjustBalancesForTrade_BuySide() {
+        Order takerOrder = createOrder("taker", Side.BUY, NUMBER(1000), NUMBER(2));
+        Order makerOrder = createOrder("maker", Side.SELL, NUMBER(1000), NUMBER(2));
+
+        Balance takerBalance = mockUserBalance("taker", NUMBER(0), NUMBER(2000));
+        Balance makerBalance = mockUserBalance("maker", NUMBER(2), NUMBER(0));
+
+        balanceService.adjustBalancesForTrade(takerOrder, makerOrder, NUMBER(2));
+
+        assertEquals(NUMBER(2000), makerBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(2), takerBalance.getCurrentBalances().get(Currency.BTC));
+    }
+
+    @Test
+    void testAdjustBalancesForTrade_SellSide() {
+        Order takerOrder = createOrder("taker", Side.SELL, NUMBER(1000), NUMBER(2));
+        Order makerOrder = createOrder("maker", Side.BUY, NUMBER(1000), NUMBER(2));
+
+        Balance takerBalance = mockUserBalance("taker", NUMBER(2), NUMBER(0));
+        Balance makerBalance = mockUserBalance("maker", NUMBER(0), NUMBER(2000));
+
+        balanceService.adjustBalancesForTrade(takerOrder, makerOrder, NUMBER(2));
+
+        assertEquals(NUMBER(2000), takerBalance.getCurrentBalances().get(Currency.ZAR));
+        assertEquals(NUMBER(2), makerBalance.getCurrentBalances().get(Currency.BTC));
+    }
+
+
+    private Balance mockUserBalance(String userId, BigDecimal btc, BigDecimal zar) {
+        Balance userBalance = new Balance(userId);
+        Map<Currency, BigDecimal> currentBalances = new EnumMap<>(Currency.class);
+        currentBalances.put(Currency.BTC, btc);
+        currentBalances.put(Currency.ZAR, zar);
+
+        userBalance.getCurrentBalances().putAll(currentBalances);
+        when(balanceRepository.getBalance(userId)).thenReturn(userBalance);
+
+        return userBalance;
     }
 }
