@@ -68,13 +68,9 @@ public class BalanceService {
     public boolean reserveOnOrder(Order order) {
         boolean isReserved;
         if (order.getSide() == Side.BUY) {
-            // BUY 0.5 BTC -> when 1 BTC = 50000 -> ZAR 25000 purchase price
-            // Reserve 25000 ZAR
             isReserved = reserve(order.getUserId(), order.getExchangePair().getQuote(), order.getQuantity().multiply(order.getPrice()));
         } else {
-            // SELL 0.5 BTC -> when 1 BTC = 50000 -> ZAR 25000 selling price
-            // Reserve 0.5 BTC
-            isReserved = reserve(order.getOrderId(), order.getExchangePair().getBase(), order.getQuantity());
+            isReserved = reserve(order.getUserId(), order.getExchangePair().getBase(), order.getQuantity());
         }
         return isReserved;
     }
@@ -82,14 +78,46 @@ public class BalanceService {
     public boolean unreserveOnOrder(Order order) {
         boolean isUnreserved;
         if (order.getSide() == Side.BUY) {
-            // BUY 0.5 BTC -> when 1 BTC = 50000 -> ZAR 25000 purchase price
-            // Reserve 25000 ZAR
             isUnreserved = unreserve(order.getUserId(), order.getExchangePair().getQuote(), order.getQuantity().multiply(order.getPrice()));
         } else {
-            // SELL 0.5 BTC -> when 1 BTC = 50000 -> ZAR 25000 selling price
-            // Reserve 0.5 BTC
             isUnreserved = unreserve(order.getUserId(), order.getExchangePair().getBase(), order.getQuantity());
         }
         return isUnreserved;
+    }
+
+    public void adjustBalancesForTrade(Order takerOrder, Order makerOrder, BigDecimal tradedQuantity) {
+        BigDecimal takerTotalCost = tradedQuantity.multiply(takerOrder.getPrice());
+        BigDecimal makerTotalCost = tradedQuantity.multiply(makerOrder.getPrice());
+
+        if (takerOrder.getSide() == Side.BUY) {
+            processBuySideTradeBalances(takerOrder, makerOrder, tradedQuantity, takerTotalCost, makerTotalCost);
+        } else {
+            processSellSideTradeBalances(takerOrder, makerOrder, tradedQuantity, makerTotalCost);
+        }
+    }
+
+    private void processBuySideTradeBalances(Order takerOrder, Order makerOrder,
+                                             BigDecimal tradedQuantity, BigDecimal takerTotalCost,
+                                             BigDecimal makerTotalCost) {
+        unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), takerTotalCost);
+        subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalCost);
+
+        unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradedQuantity);
+        subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradedQuantity);
+
+        add(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradedQuantity);
+        add(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalCost);
+    }
+
+    private void processSellSideTradeBalances(Order takerOrder, Order makerOrder,
+                                              BigDecimal tradedQuantity, BigDecimal makerTotalCost) {
+        unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradedQuantity);
+        subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradedQuantity);
+
+        unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalCost);
+        subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalCost);
+
+        add(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalCost);
+        add(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradedQuantity);
     }
 }

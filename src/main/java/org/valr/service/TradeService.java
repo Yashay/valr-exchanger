@@ -2,7 +2,6 @@ package org.valr.service;
 
 import com.google.inject.Inject;
 import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.valr.model.Order;
 import org.valr.model.Pool;
 import org.valr.model.Trade;
@@ -32,7 +31,7 @@ public class TradeService {
 
                 BigDecimal tradableQuantity = takerOrder.getQuantity().min(makerOrder.getQuantity());
 
-                handleBalances(takerOrder, makerOrder, tradableQuantity);
+                balanceService.adjustBalancesForTrade(takerOrder, makerOrder, tradableQuantity);
                 updateOrderQuantities(takerOrder, makerOrder, tradableQuantity);
 
                 removeIfZero(takerOrder);
@@ -41,42 +40,6 @@ public class TradeService {
                 recordTrade(takerOrder, makerOrder, tradableQuantity);
             }
         }
-    }
-
-    private void handleBalances(Order takerOrder, Order makerOrder, BigDecimal tradableQuantity) {
-        BigDecimal takerTotalPrice = tradableQuantity.multiply(takerOrder.getPrice());
-        BigDecimal makerTotalPrice = tradableQuantity.multiply(makerOrder.getPrice());
-
-        if (takerOrder.getSide() == Side.BUY) {
-            processBuySideBalances(takerOrder, makerOrder, tradableQuantity, takerTotalPrice, makerTotalPrice);
-        } else {
-            processSellSideBalances(takerOrder, makerOrder, tradableQuantity, makerTotalPrice);
-        }
-    }
-
-    private void processBuySideBalances(Order takerOrder, Order makerOrder,
-                                        BigDecimal tradableQuantity, BigDecimal takerTotalPrice,
-                                        BigDecimal makerTotalPrice) {
-        balanceService.unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), takerTotalPrice);
-        balanceService.subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalPrice);
-
-        balanceService.unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
-        balanceService.subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
-
-        balanceService.add(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-        balanceService.add(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-    }
-
-    private void processSellSideBalances(Order takerOrder, Order makerOrder,
-                                         BigDecimal tradableQuantity, BigDecimal makerTotalPrice) {
-        balanceService.unreserve(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-        balanceService.subtract(takerOrder.getUserId(), takerOrder.getExchangePair().getBase(), tradableQuantity);
-
-        balanceService.unreserve(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-        balanceService.subtract(makerOrder.getUserId(), makerOrder.getExchangePair().getQuote(), makerTotalPrice);
-
-        balanceService.add(takerOrder.getUserId(), takerOrder.getExchangePair().getQuote(), makerTotalPrice);
-        balanceService.add(makerOrder.getUserId(), makerOrder.getExchangePair().getBase(), tradableQuantity);
     }
 
     public void updateOrderQuantities(Order takerOrder, Order makerOrder, BigDecimal tradableQuantity) {
@@ -120,17 +83,5 @@ public class TradeService {
                 .forEach(trade -> tradesJson.add(trade.toJson()));
 
         return tradesJson;
-    }
-
-    public JsonObject formatTradeRecord(Trade trade) {
-        JsonObject tradeJson = new JsonObject();
-        tradeJson.put("price", trade.getPrice());
-        tradeJson.put("quantity", trade.getQuantity());
-        tradeJson.put("currencyPair", trade.getCurrenyExchangePair());
-        tradeJson.put("tradedAt", trade.getTradedAt());
-        tradeJson.put("takerSide", trade.getTakerSide());
-        tradeJson.put("id", trade.getTradeId());
-        tradeJson.put("quoteVolume", trade.getQuoteVolume());
-        return tradeJson;
     }
 }
