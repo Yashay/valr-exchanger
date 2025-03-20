@@ -16,7 +16,6 @@ public class MainVerticle extends AbstractVerticle {
         vertx.deployVerticle(new TradeVerticle(router, authMiddleware));
         vertx.deployVerticle(new BalanceVerticle(router, authMiddleware));
 //        vertx.deployVerticle(new SimulationManager());
-        vertx.deployVerticle(new OrderMatchingVerticle());
 
         vertx.createHttpServer()
                 .requestHandler(router)
