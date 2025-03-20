@@ -1,31 +1,41 @@
 package org.valr.model;
 
 import lombok.*;
+import org.valr.model.enums.Currency;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
 @ToString
 public class Balance {
     private String userId;
-    private BigDecimal fiatBalance;
-    private BigDecimal cryptoBalance;
+    private Map<Currency, BigDecimal> currentBalances;
+    private Map<Currency, BigDecimal> reserveBalances;
+
+    public Balance() {
+        currentBalances = new ConcurrentHashMap<>();
+        reserveBalances = new ConcurrentHashMap<>();
+        for (Currency currency : Currency.values()) {
+            currentBalances.put(currency, BigDecimal.ZERO);
+            reserveBalances.put(currency, BigDecimal.ZERO);
+        }
+    }
 
     public Balance(String userId) {
+        this();
         this.userId = userId;
-        this.fiatBalance = BigDecimal.ZERO;
-        this.cryptoBalance = BigDecimal.ZERO;
     }
 
-    public boolean hasSufficientFiatBalance(BigDecimal amount) {
-        return fiatBalance.compareTo(amount) >= 0;
+    public boolean hasSufficientBalance(Currency currency, BigDecimal amount) {
+        return currentBalances.get(currency).compareTo(amount) >= 0;
     }
 
-    public boolean hasSufficientCryptoBalance(BigDecimal amount) {
-        return cryptoBalance.compareTo(amount) >= 0;
+    public boolean hasSufficientReserveBalance(Currency currency, BigDecimal amount) {
+        return reserveBalances.get(currency).compareTo(amount) >= 0;
     }
 }

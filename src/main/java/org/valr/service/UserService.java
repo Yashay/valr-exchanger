@@ -2,7 +2,6 @@ package org.valr.service;
 
 import com.google.inject.Inject;
 import org.valr.model.User;
-import org.valr.registry.ServiceRegistry;
 import org.valr.repository.UserRepository;
 
 import java.util.Optional;
@@ -26,6 +25,7 @@ public class UserService {
     }
 
     public Optional<User> authenticate(String username, String password) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username)
+                .filter(user -> user.getPassword().equals(password));
     }
 }

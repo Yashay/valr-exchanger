@@ -16,7 +16,7 @@ public class JwtAuthProvider {
     private static final String KEY_HASHING_ALGORITHM = "HmacSHA256";
     private static final int EXPIRATION_TIME = 60 * 60 * 24;
     // hard to test
-    private static final String SECRET_KEY = generateSecretKey();
+    private static final String SECRET_KEY = "Hello-World!";
     private final JWTAuth jwtAuth;
 
     public JwtAuthProvider(Vertx vertx) {
@@ -41,8 +41,7 @@ public class JwtAuthProvider {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance(KEY_HASHING_ALGORITHM);
             SecretKey key = keyGen.generateKey();
-            String base64Key = Base64.getEncoder().encodeToString(key.getEncoded());
-            return base64Key;
+            return Base64.getEncoder().encodeToString(key.getEncoded());
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate JWT secret key", e);
         }
