@@ -2,6 +2,7 @@ package org.valr.service;
 
 import com.google.inject.Inject;
 import io.vertx.core.json.JsonArray;
+import org.valr.dto.TradeDTO;
 import org.valr.model.Order;
 import org.valr.model.Pool;
 import org.valr.model.Trade;
@@ -80,7 +81,7 @@ public class TradeService {
         userTrades.stream()
                 .sorted((a, b) -> b.getTradedAt().compareTo(a.getTradedAt()))
                 .limit(limit)
-                .forEach(trade -> tradesJson.add(trade.toJson()));
+                .forEach(trade -> tradesJson.add(TradeDTO.from(trade).toJson()));
 
         return tradesJson;
     }

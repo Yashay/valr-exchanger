@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.valr.dto.PoolDTO;
 import org.valr.model.Order;
 import org.valr.model.Pool;
 import org.valr.model.enums.TimeInForce;
@@ -81,7 +82,7 @@ public class OrderBookService {
         JsonArray topOrders = new JsonArray();
         for (Map.Entry<BigDecimal, Pool> entry : poolMap.entrySet()) {
             Pool pool = entry.getValue();
-            topOrders.add(pool.toJson());
+            topOrders.add(PoolDTO.from(pool).toJson());
             if (limit < 1) break;
             limit--;
         }
