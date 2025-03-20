@@ -11,6 +11,6 @@ public class BalanceRepository {
     public BalanceRepository() {}
 
     public Balance getBalance(String userId) {
-        return userBalances.computeIfAbsent(userId, Balance::new);
+        return userBalances.computeIfAbsent(userId, u -> new Balance(u));
     }
 }

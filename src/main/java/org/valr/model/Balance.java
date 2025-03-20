@@ -13,22 +13,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @ToString
 public class Balance {
-    private String userId;
-    private Map<Currency, BigDecimal> currentBalances;
-    private Map<Currency, BigDecimal> reserveBalances;
+    private final String userId;
+    private final Map<Currency, BigDecimal> currentBalances;
+    private final Map<Currency, BigDecimal> reserveBalances;
 
-    public Balance() {
+    public Balance(String userId) {
+        this.userId = userId;
         currentBalances = new ConcurrentHashMap<>();
         reserveBalances = new ConcurrentHashMap<>();
         for (Currency currency : Currency.values()) {
             currentBalances.put(currency, BigDecimal.ZERO);
             reserveBalances.put(currency, BigDecimal.ZERO);
         }
-    }
-
-    public Balance(String userId) {
-        this();
-        this.userId = userId;
     }
 
     public boolean hasSufficientBalance(Currency currency, BigDecimal amount) {
