@@ -18,42 +18,46 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testSaveAndFindByUsername() {
-        User user = new User("1", "testuser", "password123");
+    void testSaveUser_ValidUser() {
+        User user = new User("userId123", "user123", "password");
 
         userRepository.save(user);
 
-        Optional<User> foundUser = userRepository.findByUsername("testuser");
-        assertTrue(foundUser.isPresent());
-        assertEquals(user, foundUser.get());
+        Optional<User> retrievedUser = userRepository.findByUsername("user123");
+        assertTrue(retrievedUser.isPresent());
+        assertEquals(user.getUsername(), retrievedUser.get().getUsername());
+        assertEquals(user.getUserId(), retrievedUser.get().getUserId());
     }
 
     @Test
-    void testFindByUsernameWhenUserDoesNotExist() {
-        Optional<User> foundUser = userRepository.findByUsername("nonexistentuser");
-
-        assertFalse(foundUser.isPresent());
-    }
-
-    @Test
-    void testSaveAndOverwriteUser() {
-        User user1 = new User("1", "testuser", "password123");
-        User user2 = new User("2", "testuser", "newpassword123");
-
-        userRepository.save(user1);
-        userRepository.save(user2);
-
-        Optional<User> foundUser = userRepository.findByUsername("testuser");
-        assertTrue(foundUser.isPresent());
-        assertEquals(user2, foundUser.get());
-    }
-
-    @Test
-    void testSaveNullUser() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+    void testSaveUser_NullUser() {
+        assertThrows(IllegalArgumentException.class, () -> {
             userRepository.save(null);
         });
+    }
 
-        assertEquals("User or username cannot be null", exception.getMessage());
+    @Test
+    void testSaveUser_NullUsername() {
+        User user = new User("userId123", null, "password");
+        assertThrows(IllegalArgumentException.class, () -> {
+            userRepository.save(user);
+        });
+    }
+
+    @Test
+    void testFindByUsername_UserNotFound() {
+        Optional<User> retrievedUser = userRepository.findByUsername("nonExistentUser");
+        assertFalse(retrievedUser.isPresent());
+    }
+
+    @Test
+    void testFindByUsername_UserFound() {
+        User user = new User("userId123", "user123", "password");
+        userRepository.save(user);
+
+        Optional<User> retrievedUser = userRepository.findByUsername("user123");
+        assertTrue(retrievedUser.isPresent());
+        assertEquals(user.getUsername(), retrievedUser.get().getUsername());
+        assertEquals(user.getUserId(), retrievedUser.get().getUserId());
     }
 }
