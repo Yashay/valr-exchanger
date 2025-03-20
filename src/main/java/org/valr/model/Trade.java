@@ -16,24 +16,24 @@ import java.util.UUID;
 @Getter
 @ToString
 public class Trade implements Comparable<Trade> {
-    private String tradeId;
+    private final String tradeId;
 
-    private BigDecimal price;
-    private BigDecimal quantity;
-    private BigDecimal quoteVolume;
+    private final BigDecimal price;
+    private final BigDecimal quantity;
+    private final BigDecimal quoteVolume;
 
-    private Side takerSide;
-    private Side makerSide;
+    private final Side takerSide;
+    private final Side makerSide;
 
-    private String makerId;
-    private String takerId;
+    private final String makerId;
+    private final String takerId;
 
-    private String makerOrderId;
-    private String takerOrderId;
+    private final String makerOrderId;
+    private final String takerOrderId;
 
-    private ExchangePair currenyExchangePair;
+    private final ExchangePair currenyExchangePair;
     
-    private Instant tradedAt;
+    private final Instant tradedAt;
 
     public Trade(Order takerOrder, Order makerOrder, BigDecimal price, BigDecimal quantity) {
         tradeId = UUID.randomUUID().toString();
