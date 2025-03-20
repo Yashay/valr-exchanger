@@ -17,10 +17,18 @@ public class TestHelper {
     }
 
     public static Order createOrder(Side side, BigDecimal price, BigDecimal quantity) {
-        return createOrder("userId", side, price, quantity);
+        return createOrder("userId", side, price, quantity, TimeInForce.GTC);
+    }
+
+    public static Order createOrder(Side side, BigDecimal price, BigDecimal quantity, TimeInForce timeInForce) {
+        return createOrder("userId", side, price, quantity, timeInForce);
     }
 
     public static Order createOrder(String userId, Side side, BigDecimal price, BigDecimal quantity) {
+        return createOrder(userId, side, price, quantity, TimeInForce.GTC);
+    }
+
+    public static Order createOrder(String userId, Side side, BigDecimal price, BigDecimal quantity, TimeInForce timeInForce) {
         Order order = new Order();
         order.setUserId(userId);
         order.setSide(side);
@@ -28,7 +36,7 @@ public class TestHelper {
         order.setPrice(price);
         order.setInitialQuantity(quantity);
         order.setQuantity(quantity);
-        order.setTimeInForce(TimeInForce.FOK);
+        order.setTimeInForce(timeInForce);
         order.setTimestamp(Instant.now());
         order.setSequence(Instant.now().toEpochMilli());
         return order;
