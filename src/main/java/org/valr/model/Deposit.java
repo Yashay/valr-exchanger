@@ -13,5 +13,12 @@ import java.time.Instant;
 public class Deposit {
     final Currency currency;
     final BigDecimal amount;
-    final Instant executed = Instant.now();
+    final Instant executed;
+
+    public Deposit() {
+        this.currency = null;
+        this.amount = BigDecimal.ZERO;
+        this.executed = Instant.now();
+    }
+
 }
