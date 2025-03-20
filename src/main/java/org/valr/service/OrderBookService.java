@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.valr.dto.PoolDTO;
 import org.valr.model.Order;
 import org.valr.model.Pool;
-import org.valr.model.enums.TimeInForce;
 import org.valr.repository.OrderBookRepository;
 
 import java.math.BigDecimal;
@@ -16,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class OrderBookService {
+    private static final int ORDER_BOOK_DEPTH_LIMIT = 40;
+
     private final OrderBookRepository orderBookRepository;
     private final BalanceService balanceService;
     private final TradeService tradeService;
@@ -34,33 +35,43 @@ public class OrderBookService {
         order.setUserId(userId);
 
         boolean isReserved = balanceService.reserveOnOrder(order);
-        if (isReserved) {
-            Pair<ConcurrentSkipListSet<Pool>, Boolean> validPartialOrImmediatePools = matchingService.getPoolsForPartialOrImmediateMatch(order);
-            ConcurrentSkipListSet<Pool> validPools = validPartialOrImmediatePools.getLeft();
-            Boolean isVolumeCompletelyFillable = validPartialOrImmediatePools.getRight();
-
-            orderBookRepository.addOrder(order);
-
-            if (order.getTimeInForce() == TimeInForce.FOK && isVolumeCompletelyFillable) {
-                // will fill and auto remove
-                tradeService.executeMatches(order, validPools);
-            } else if (order.getTimeInForce() == TimeInForce.FOK) {
-                // can't fill remove
-                orderBookRepository.removeOrder(order);
-            } else if (order.getTimeInForce() == TimeInForce.IOC) {
-                // will remain in book need to manually remove & unreserve balances
-                tradeService.executeMatches(order, validPools);
-                orderBookRepository.removeOrder(order);
-                balanceService.unreserveOnOrder(order);
-            } else {
-                // (order.getTimeInForce() == TimeInForce.GTC)
-                // if filled will auto remove
-                tradeService.executeMatches(order, validPools);
-            }
-        } else {
+        if (!isReserved) {
             return formatOrderConfirmation(order.getOrderId(), isReserved);
         }
+
+        Pair<ConcurrentSkipListSet<Pool>, Boolean> validPartialOrImmediatePools = matchingService.getPoolsForPartialOrImmediateMatch(order);
+        ConcurrentSkipListSet<Pool> validPools = validPartialOrImmediatePools.getLeft();
+        Boolean isVolumeCompletelyFillable = validPartialOrImmediatePools.getRight();
+
+//        orderBookRepository.addOrder(order);
+        switch (order.getTimeInForce()) {
+            case FOK -> handleFOK(order, validPools, isVolumeCompletelyFillable);
+            case IOC -> handleIOC(order, validPools);
+            case GTC -> handleGTC(order, validPools);
+        }
         return new JsonObject();
+    }
+
+    private void handleFOK(Order order, ConcurrentSkipListSet<Pool> validPools, boolean isVolumeCompletelyFillable) {
+        if (isVolumeCompletelyFillable) {
+            tradeService.executeMatches(order, validPools);
+        } else { // cannot be filled
+            balanceService.unreserveOnOrder(order);
+        }
+    }
+
+    private void handleIOC(Order order, ConcurrentSkipListSet<Pool> validPools) {
+        tradeService.executeMatches(order, validPools);
+        if (order.getQuantity().compareTo(BigDecimal.ZERO) > 0) { // partially filled
+            balanceService.unreserveOnOrder(order);
+        }
+    }
+
+    private void handleGTC(Order order, ConcurrentSkipListSet<Pool> validPools) {
+        tradeService.executeMatches(order, validPools);
+        if (order.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+            orderBookRepository.addOrder(order);
+        }
     }
 
     public JsonObject getOrderBookSnapshot(String currencyPair) {
@@ -78,13 +89,13 @@ public class OrderBookService {
     }
 
     private JsonArray buildSideSnapshot(Map<BigDecimal, Pool> poolMap) {
-        int limit = 40;
+        int count = 0;
         JsonArray topOrders = new JsonArray();
         for (Map.Entry<BigDecimal, Pool> entry : poolMap.entrySet()) {
+            if (count >= ORDER_BOOK_DEPTH_LIMIT) break;
             Pool pool = entry.getValue();
             topOrders.add(PoolDTO.from(pool).toJson());
-            if (limit < 1) break;
-            limit--;
+            count++;
         }
         return topOrders;
     }
@@ -92,7 +103,6 @@ public class OrderBookService {
     private JsonObject formatOrderConfirmation(String orderId, Boolean isPlaced) {
         JsonObject orderConfirmation = new JsonObject();
         orderConfirmation.put("orderId", orderId);
-        orderConfirmation.put("code", -6);
         orderConfirmation.put("placed", isPlaced);
         orderConfirmation.put("message", "Insufficient funds");
         return orderConfirmation;
