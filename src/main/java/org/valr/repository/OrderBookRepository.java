@@ -51,15 +51,4 @@ public class OrderBookRepository {
         return (side == Side.BUY) ? sellPoolMap : buyPoolMap;
     }
 
-    public BigDecimal getBestBuyPrice() {
-        return sellPoolMap.isEmpty() ? null : sellPoolMap.firstKey();
-    }
-
-    public BigDecimal getBestSellPrice() {
-        return buyPoolMap.isEmpty() ? null : buyPoolMap.firstKey();
-    }
-
-    public Long getOrderCount() {
-        return orderCounter.get();
-    }
 }
