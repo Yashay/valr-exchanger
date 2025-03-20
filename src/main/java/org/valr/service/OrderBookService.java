@@ -6,7 +6,6 @@ import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.valr.model.Order;
 import org.valr.model.Pool;
-import org.valr.model.enums.Side;
 import org.valr.model.enums.TimeInForce;
 import org.valr.repository.OrderBookRepository;
 
@@ -66,34 +65,26 @@ public class OrderBookService {
     public JsonObject getOrderBookSnapshot(String currencyPair) {
         JsonObject orderBookSnapshot = new JsonObject();
 
-        JsonArray asks = buildSideSnapshot(orderBookRepository.getSellPoolMap(), Side.SELL, currencyPair);
-        JsonArray bids = buildSideSnapshot(orderBookRepository.getBuyPoolMap(), Side.BUY, currencyPair);
+        JsonArray asks = buildSideSnapshot(orderBookRepository.getSellPoolMap());
+        JsonArray bids = buildSideSnapshot(orderBookRepository.getBuyPoolMap());
 
         orderBookSnapshot.put("Asks", asks);
         orderBookSnapshot.put("Bids", bids);
-        orderBookSnapshot.put("Sequencce", orderBookRepository.getOrderCounter().longValue());
+        orderBookSnapshot.put("sequence", orderBookRepository.getOrderCounter().longValue());
         orderBookSnapshot.put("createdAt", Instant.now());
 
         return orderBookSnapshot;
     }
 
-    private JsonArray buildSideSnapshot(Map<BigDecimal, Pool> poolMap, Side side, String currencyPair) {
+    private JsonArray buildSideSnapshot(Map<BigDecimal, Pool> poolMap) {
         int limit = 40;
         JsonArray topOrders = new JsonArray();
         for (Map.Entry<BigDecimal, Pool> entry : poolMap.entrySet()) {
             Pool pool = entry.getValue();
-            JsonObject orderEntry = new JsonObject();
-            orderEntry.put("side", side.name().toLowerCase());
-            orderEntry.put("quantity", pool.getVolume().toString());
-            orderEntry.put("price", pool.getPrice().toPlainString());
-            orderEntry.put("currencyPair", currencyPair);
-            orderEntry.put("orderCount", pool.getOrders().size());
-
-            topOrders.add(orderEntry);
+            topOrders.add(pool.toJson());
             if (limit < 1) break;
             limit--;
         }
-
         return topOrders;
     }
 
