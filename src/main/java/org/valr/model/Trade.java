@@ -52,6 +52,15 @@ public class Trade implements Comparable<Trade> {
 
     @Override
     public int compareTo(Trade otherTrade) {
-        return tradedAt.compareTo(otherTrade.tradedAt);
+        int timeComparison = this.tradedAt.compareTo(otherTrade.tradedAt);
+        if (timeComparison != 0) return timeComparison;
+
+        int priceComparison = otherTrade.price.compareTo(this.price);
+        if (priceComparison != 0) return priceComparison;
+
+        int quantityComparison = otherTrade.quantity.compareTo(this.quantity);
+        if (quantityComparison != 0) return quantityComparison;
+
+        return this.tradeId.compareTo(otherTrade.tradeId);
     }
 }
