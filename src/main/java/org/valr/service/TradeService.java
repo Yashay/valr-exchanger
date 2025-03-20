@@ -117,7 +117,7 @@ public class TradeService {
         userTrades.stream()
                 .sorted((a, b) -> b.getTradedAt().compareTo(a.getTradedAt()))
                 .limit(limit)
-                .forEach(trade -> tradesJson.add(formatTradeRecord(trade)));
+                .forEach(trade -> tradesJson.add(trade.toJson()));
 
         return tradesJson;
     }
