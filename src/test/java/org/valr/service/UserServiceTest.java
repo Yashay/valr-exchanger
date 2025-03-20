@@ -1,31 +1,31 @@
 package org.valr.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.valr.model.User;
 import org.valr.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+class UserServiceTest {
 
-    @Mock
+    private UserService userService;
     private UserRepository userRepository;
 
-    @InjectMocks
-    private UserService userService;
+    @BeforeEach
+    void setUp() {
+        userRepository = mock(UserRepository.class);
+        userService = new UserService(userRepository);
+    }
 
     @Test
-    public void testRegisterUser_Success() {
-        String username = "testuser";
+    void testRegisterUser_ShouldRegisterSuccessfully_WhenUsernameIsUnique() {
+        String username = "newUser";
         String password = "password123";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
@@ -33,15 +33,18 @@ public class UserServiceTest {
         boolean result = userService.registerUser(username, password);
 
         assertTrue(result);
-        verify(userRepository).save(any(User.class));
+        verify(userRepository).save(Mockito.argThat(user ->
+                user.getUsername().equals(username) && user.getPassword().equals(password)
+        ));
     }
 
     @Test
-    public void testRegisterUser_UsernameAlreadyExists() {
-        String username = "testuser";
+    void testRegisterUser_ShouldFail_WhenUsernameAlreadyExists() {
+        String username = "existingUser";
         String password = "password123";
+        User existingUser = new User(UUID.randomUUID().toString(), username, "anotherPassword");
 
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User("1", username, password)));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(existingUser));
 
         boolean result = userService.registerUser(username, password);
 
@@ -50,28 +53,42 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testAuthenticate_UserExists() {
-        String username = "testuser";
-        String password = "password123";
-        User user = new User("1", username, password);
+    void testAuthenticate_ShouldReturnUser_WhenCredentialsAreCorrect() {
+        String username = "validUser";
+        String password = "correctPassword";
+        User user = new User(UUID.randomUUID().toString(), username, password);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        Optional<User> result = userService.authenticate(username, password);
+        Optional<User> authenticatedUser = userService.authenticate(username, password);
 
-        assertTrue(result.isPresent());
-        assertEquals(user, result.get());
+        assertTrue(authenticatedUser.isPresent());
+        assertEquals(username, authenticatedUser.get().getUsername());
     }
 
     @Test
-    public void testAuthenticate_UserNotFound() {
-        String username = "nonexistentuser";
+    void testAuthenticate_ShouldReturnEmpty_WhenPasswordIsIncorrect() {
+        String username = "validUser";
+        String correctPassword = "correctPassword";
+        String wrongPassword = "wrongPassword";
+        User user = new User(UUID.randomUUID().toString(), username, correctPassword);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+
+        Optional<User> authenticatedUser = userService.authenticate(username, wrongPassword);
+
+        assertFalse(authenticatedUser.isPresent());
+    }
+
+    @Test
+    void testAuthenticate_ShouldReturnEmpty_WhenUsernameDoesNotExist() {
+        String username = "nonExistentUser";
         String password = "password123";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        Optional<User> result = userService.authenticate(username, password);
+        Optional<User> authenticatedUser = userService.authenticate(username, password);
 
-        assertFalse(result.isPresent());
+        assertFalse(authenticatedUser.isPresent());
     }
 }
