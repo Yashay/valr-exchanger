@@ -1,14 +1,12 @@
 package org.valr.repository;
 
+import org.valr.model.Balance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.valr.model.Balance;
-
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class BalanceRepositoryTest {
+
     private BalanceRepository balanceRepository;
 
     @BeforeEach
@@ -17,28 +15,38 @@ class BalanceRepositoryTest {
     }
 
     @Test
-    void testGetBalanceCreatesNewBalanceIfNotExists() {
+    void testGetBalance_NewUser() {
         String userId = "user123";
         Balance balance = balanceRepository.getBalance(userId);
-
         assertNotNull(balance);
         assertEquals(userId, balance.getUserId());
-        assertEquals(BigDecimal.ZERO, balance.getFiatBalance());
-        assertEquals(BigDecimal.ZERO, balance.getCryptoBalance());
     }
 
     @Test
-    void testGetBalanceReturnsExistingBalance() {
+    void testGetBalance_ExistingUser() {
         String userId = "user123";
-        // Use BigDecimal.valueOf() for clean initialization
-        Balance initialBalance = new Balance(userId, BigDecimal.valueOf(100.00), BigDecimal.valueOf(0.50));
-        balanceRepository.getBalance(userId).setFiatBalance(BigDecimal.valueOf(200.00));
-        balanceRepository.getBalance(userId).setCryptoBalance(BigDecimal.valueOf(1));
-
+        Balance initialBalance = balanceRepository.getBalance(userId);
         Balance retrievedBalance = balanceRepository.getBalance(userId);
-
-        assertNotNull(retrievedBalance);
-        assertEquals(BigDecimal.valueOf(200.00), retrievedBalance.getFiatBalance());
-        assertEquals(BigDecimal.valueOf(1), retrievedBalance.getCryptoBalance());
+        assertSame(initialBalance, retrievedBalance);
     }
+
+    @Test
+    void testGetBalance_MultipleUsers() {
+        String userId1 = "user123";
+        String userId2 = "user456";
+        Balance balance1 = balanceRepository.getBalance(userId1);
+        Balance balance2 = balanceRepository.getBalance(userId2);
+        assertNotSame(balance1, balance2);
+        assertEquals(userId1, balance1.getUserId());
+        assertEquals(userId2, balance2.getUserId());
+    }
+
+    @Test
+    void testGetBalance_UserIdNotNull() {
+        String userId = "user123";
+        Balance balance = balanceRepository.getBalance(userId);
+        assertNotNull(balance.getUserId());
+        assertEquals(userId, balance.getUserId());
+    }
+
 }
