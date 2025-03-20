@@ -35,7 +35,7 @@ public class OrderBookService {
 
         boolean isReserved = balanceService.reserveOnOrder(order);
         if (isReserved) {
-            Pair<ConcurrentSkipListSet<Pool>, Boolean> validPartialOrImmediatePools = matchingService.getPoolsMatchingVolumeRequestPartialOrImmediateFill(order);
+            Pair<ConcurrentSkipListSet<Pool>, Boolean> validPartialOrImmediatePools = matchingService.getPoolsForPartialOrImmediateMatch(order);
             ConcurrentSkipListSet<Pool> validPools = validPartialOrImmediatePools.getLeft();
             Boolean isVolumeCompletelyFillable = validPartialOrImmediatePools.getRight();
 

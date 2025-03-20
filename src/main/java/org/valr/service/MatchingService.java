@@ -21,7 +21,7 @@ public class MatchingService {
     }
 
     // PUBLIC for testing purposes
-    public Pair<ConcurrentSkipListSet<Pool>, Boolean> getPoolsMatchingVolumeRequestPartialOrImmediateFill(Order takerOrder) {
+    public Pair<ConcurrentSkipListSet<Pool>, Boolean> getPoolsForPartialOrImmediateMatch(Order takerOrder) {
         ConcurrentSkipListSet<Pool> pools = new ConcurrentSkipListSet<>();
         BigDecimal volumeRequired = takerOrder.getQuantity();
         for (Map.Entry<BigDecimal, Pool> entry : orderBookRepository.getPoolsOppositeSide(takerOrder.getSide()).entrySet()) {
