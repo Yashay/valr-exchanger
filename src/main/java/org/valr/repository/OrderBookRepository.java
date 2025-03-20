@@ -23,7 +23,10 @@ public class OrderBookRepository {
     public void addOrder(Order order) {
         order.setSequence(orderCounter.getAndIncrement());
         getPoolsMapBySide(order.getSide())
-                .computeIfAbsent(order.getPrice(), Pool::new)
+                .computeIfAbsent(order.getPrice(), p -> {
+                    Pool pool = new Pool(order.getSide(), order.getExchangePair(), order.getPrice());
+                    return pool;
+                })
                 .addOrder(order);
     }
 
