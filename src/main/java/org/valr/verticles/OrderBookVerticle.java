@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.valr.middleware.AuthMiddleware;
+import org.valr.middleware.ValidationMiddleware;
 import org.valr.model.Order;
 import org.valr.registry.ServiceRegistry;
 import org.valr.service.OrderBookService;
@@ -20,6 +21,8 @@ public class OrderBookVerticle extends AbstractVerticle {
     private void setupRoutes(Router router, AuthMiddleware authMiddleware) {
         router.post("/api/orders/limit")
                 .handler(authMiddleware::authenticate)
+                //TODO better way to do this? [IDEA injection]
+                .handler(new ValidationMiddleware<>(Order.class)::validate)
                 .handler(this::placeLimitOrder);
         router.get("/api/orderbook")
                 .handler(this::getOrderBookSnapshot);
