@@ -3,7 +3,7 @@ package org.valr.model.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
-import java.util.Arrays;
+import static org.valr.util.enums.Common.fromBody;
 
 @Getter
 public enum ExchangePair {
@@ -19,9 +19,6 @@ public enum ExchangePair {
 
     @JsonCreator
     public static ExchangePair fromString(String pair) {
-        return Arrays.stream(ExchangePair.values())
-                .filter(p -> p.name().equalsIgnoreCase(pair))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid crypto pair: " + pair));
+        return fromBody(ExchangePair.class, pair);
     }
 }
