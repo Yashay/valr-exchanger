@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.valr.middleware.AuthMiddleware;
+import org.valr.middleware.ValidationMiddleware;
 import org.valr.model.Deposit;
 import org.valr.registry.ServiceRegistry;
 import org.valr.service.BalanceService;
@@ -20,6 +21,7 @@ public class BalanceVerticle extends AbstractVerticle {
     private void setupRoutes(Router router, AuthMiddleware authMiddleware) {
         router.post("/api/balance/deposit")
                 .handler(authMiddleware::authenticate)
+                .handler(new ValidationMiddleware<>(Deposit.class)::validate)
                 .handler(this::depositCurrencyIntoAccount);
     }
 
