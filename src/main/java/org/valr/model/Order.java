@@ -59,6 +59,11 @@ public class Order implements Comparable<Order> {
             return timeComparison;
         }
 
+        int quantityComparison = this.quantity.compareTo(other.quantity);
+        if (quantityComparison != 0) {
+            return quantityComparison;
+        }
+
         int sequenceComparison = this.sequence.compareTo(other.sequence);
         if (sequenceComparison != 0) {
             return sequenceComparison;
