@@ -3,12 +3,16 @@ package org.valr.verticles;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import org.valr.middleware.AuthMiddleware;
 
 public class MainVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) {
         Router router = Router.router(vertx);
+        router.route().handler(BodyHandler.create());
+
+        //TODO better way to inject this?
         AuthMiddleware authMiddleware = new AuthMiddleware(vertx);
 
         vertx.deployVerticle(new UserVerticle(router));
