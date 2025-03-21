@@ -1,7 +1,7 @@
 package org.valr.verticles;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.valr.middleware.AuthMiddleware;
@@ -18,15 +18,16 @@ public class BalanceVerticle extends AbstractVerticle {
     }
 
     private void setupRoutes(Router router, AuthMiddleware authMiddleware) {
-        router.post("/api/balance/deposit").handler(authMiddleware::authenticate).handler(this::depositCurrencyIntoAccount);
+        router.post("/api/balance/deposit")
+                .handler(authMiddleware::authenticate)
+                .handler(this::depositCurrencyIntoAccount);
     }
 
     private void depositCurrencyIntoAccount(RoutingContext context) {
-        context.request().bodyHandler(body -> {
             String userId = AuthMiddleware.getUserIdFromContext(context);
-            Deposit deposit = Json.decodeValue(body, Deposit.class);
+            JsonObject data = context.body().asJsonObject();
+            Deposit deposit = data.mapTo(Deposit.class);
             balanceService.add(userId, deposit.getCurrency(), deposit.getAmount());
             context.response().setStatusCode(200).end();
-        });
     }
 }
