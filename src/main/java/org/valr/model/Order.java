@@ -6,6 +6,7 @@ import lombok.*;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
 import org.valr.model.enums.TimeInForce;
+import org.valr.util.enums.ValidEnum;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,18 +27,20 @@ public class Order implements Comparable<Order> {
     private TimeInForce timeInForce;
 
     @NotNull(message = "Side is required")
+    @ValidEnum(enumClass = Side.class, message = "Must match a side")
     private Side side;
 
-    @NotNull(message = "Currency exchange pair is required")
+    @NotNull(message = "ExchangePair currency is required")
+    @ValidEnum(enumClass = ExchangePair.class, message = "Must match a exchange currency pair")
     private ExchangePair exchangePair;
 
-    @NotNull
+    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.000001", message = "Price must be greater than zero")
     private BigDecimal price;
 
     private BigDecimal initialQuantity;
 
-    @NotNull
+    @NotNull(message = "Quantity is required")
     @DecimalMin(value = "0.000001", message = "Quantity must be greater than zero")
     private BigDecimal quantity;
 
@@ -68,12 +71,8 @@ public class Order implements Comparable<Order> {
         if (sequenceComparison != 0) {
             return sequenceComparison;
         }
-
-        int quantityComparison = this.quantity.compareTo(other.quantity);
-        if (quantityComparison != 0) {
-            return quantityComparison;
-        }
-
         return 0;
     }
+
+    //TODO perhaps json annotated constructor?
 }
