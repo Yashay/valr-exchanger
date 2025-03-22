@@ -1,17 +1,17 @@
 package org.valr.middleware;
 
-import io.vertx.core.Vertx;
+import com.google.inject.Inject;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.TokenCredentials;
-import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.web.RoutingContext;
 import org.valr.auth.JwtAuthProvider;
 
 public class AuthMiddleware {
-    private final JWTAuth jwtAuth;
+    private final JwtAuthProvider jwtAuthProvider;
 
-    public AuthMiddleware(Vertx vertx) {
-        this.jwtAuth = new JwtAuthProvider(vertx).getAuthProvider();
+    @Inject
+    public AuthMiddleware(JwtAuthProvider jwtAuthProvider) {
+        this.jwtAuthProvider = jwtAuthProvider;
     }
 
     public void authenticate(RoutingContext context) {
@@ -21,7 +21,7 @@ public class AuthMiddleware {
             return;
         }
         String token = authHeader.substring(7);
-        jwtAuth.authenticate(new TokenCredentials(token))
+        jwtAuthProvider.get().authenticate(new TokenCredentials(token))
                 .onSuccess(user -> {
                     context.put("user", user);
                     context.next();

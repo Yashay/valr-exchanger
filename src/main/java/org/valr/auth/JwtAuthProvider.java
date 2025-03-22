@@ -14,7 +14,7 @@ import java.util.Base64;
 public class JwtAuthProvider {
     private static final String JWT_HASHING_ALGORITHM = "HS256";
     private static final String KEY_HASHING_ALGORITHM = "HmacSHA256";
-    private static final int EXPIRATION_TIME = 60 * 60 * 24;
+    private static final int EXPIRATION_TIME = 60 * 60 * 24 * 30;
     // hard to test
     private static final String SECRET_KEY = "Hello-World!";
     private final JWTAuth jwtAuth;
@@ -26,7 +26,7 @@ public class JwtAuthProvider {
                         .setBuffer(SECRET_KEY)));
     }
 
-    public JWTAuth getAuthProvider() {
+    public JWTAuth get() {
         return jwtAuth;
     }
 

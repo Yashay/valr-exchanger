@@ -4,21 +4,18 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.valr.middleware.AuthMiddleware;
+import org.valr.registry.AppRegistry;
 
 public class MainVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) {
-        Router router = Router.router(vertx);
+        Router router = AppRegistry.injector.getInstance(Router.class);
         router.route().handler(BodyHandler.create());
 
-        //TODO better way to inject this?
-        AuthMiddleware authMiddleware = new AuthMiddleware(vertx);
-
-        vertx.deployVerticle(new UserVerticle(router));
-        vertx.deployVerticle(new OrderBookVerticle(router, authMiddleware));
-        vertx.deployVerticle(new TradeVerticle(router, authMiddleware));
-        vertx.deployVerticle(new BalanceVerticle(router, authMiddleware));
+        vertx.deployVerticle(AppRegistry.injector.getInstance(UserVerticle.class));
+        vertx.deployVerticle(AppRegistry.injector.getInstance(OrderBookVerticle.class));
+        vertx.deployVerticle(AppRegistry.injector.getInstance(TradeVerticle.class));
+        vertx.deployVerticle(AppRegistry.injector.getInstance(BalanceVerticle.class));
 //        vertx.deployVerticle(new SimulationManager());
 
         vertx.createHttpServer()

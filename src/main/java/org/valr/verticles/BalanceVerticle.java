@@ -1,5 +1,6 @@
 package org.valr.verticles;
 
+import com.google.inject.Inject;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -7,14 +8,14 @@ import io.vertx.ext.web.RoutingContext;
 import org.valr.middleware.AuthMiddleware;
 import org.valr.middleware.ValidationMiddleware;
 import org.valr.model.Deposit;
-import org.valr.registry.ServiceRegistry;
 import org.valr.service.BalanceService;
 
 public class BalanceVerticle extends AbstractVerticle {
     private final BalanceService balanceService;
 
-    public BalanceVerticle(Router router, AuthMiddleware authMiddleware) {
-        balanceService = ServiceRegistry.getBalanceService();
+    @Inject
+    public BalanceVerticle(Router router, AuthMiddleware authMiddleware, BalanceService balanceService) {
+        this.balanceService = balanceService;
         setupRoutes(router, authMiddleware);
     }
 
