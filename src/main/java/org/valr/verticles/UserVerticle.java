@@ -16,10 +16,11 @@ import java.util.Optional;
 
 public class UserVerticle extends AbstractVerticle {
     private final UserService userService;
-    private final JwtAuthProvider jwtAuthProvider = new JwtAuthProvider(vertx);
+    private final JwtAuthProvider jwtAuthProvider;
 
     @Inject
-    public UserVerticle(Router router, AuthMiddleware authMiddleware, UserService userService) {
+    public UserVerticle(Router router, JwtAuthProvider jwtAuthProvider, UserService userService) {
+        this.jwtAuthProvider = jwtAuthProvider;
         this.userService = userService;
         setupRoutes(router);
     }

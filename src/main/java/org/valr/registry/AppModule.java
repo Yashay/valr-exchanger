@@ -57,8 +57,8 @@ public class AppModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public UserVerticle provideUserVerticle(Router router, AuthMiddleware authMiddleware, UserService userService) {
-        return new UserVerticle(router, authMiddleware, userService);
+    public UserVerticle provideUserVerticle(Router router, JwtAuthProvider jwtAuthProvider, UserService userService) {
+        return new UserVerticle(router, jwtAuthProvider, userService);
     }
 
     @Provides
