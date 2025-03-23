@@ -1,37 +1,75 @@
 package org.valr.model;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
+import org.valr.model.enums.Currency;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.valr.TestHelper.NUMBER;
 
+//TOOO Add constraints validator check verifications
 class BalanceTest {
 
-    @Test
-    void testParameterizedConstructor() {
-        Balance balance = new Balance("user123");
+    private Balance balance;
 
-        assertEquals("user123", balance.getUserId());
-        assertEquals(BigDecimal.ZERO, balance.getFiatBalance());
-        assertEquals(BigDecimal.ZERO, balance.getCryptoBalance());
+    @BeforeEach
+    void setUp() {
+        balance = new Balance("user123");
     }
 
     @Test
-    void testHasSufficientFiatBalance() {
-        Balance balance = new Balance("user123", BigDecimal.valueOf(100.00), BigDecimal.valueOf(0.05));
-
-        assertTrue(balance.hasSufficientFiatBalance(BigDecimal.valueOf(50.00)));
-        assertTrue(balance.hasSufficientFiatBalance(BigDecimal.valueOf(100.00)));
-        assertFalse(balance.hasSufficientFiatBalance(BigDecimal.valueOf(101.00)));
+    void testInitialBalancesAreZero() {
+        for (Currency currency : Currency.values()) {
+            assertEquals(NUMBER(0), balance.getCurrentBalances().get(currency));
+            assertEquals(NUMBER(0), balance.getReserveBalances().get(currency));
+        }
     }
 
     @Test
-    void testHasSufficientCryptoBalance() {
-        Balance balance = new Balance("user123", BigDecimal.valueOf(100.00), BigDecimal.valueOf(0.05));
+    void testHasSufficientBalance() {
+        Currency currency = Currency.BTC;
+        balance.getCurrentBalances().put(currency, NUMBER(100));
 
-        assertTrue(balance.hasSufficientCryptoBalance(BigDecimal.valueOf(0.01)));
-        assertTrue(balance.hasSufficientCryptoBalance(BigDecimal.valueOf(0.05)));
-        assertFalse(balance.hasSufficientCryptoBalance(BigDecimal.valueOf(0.06)));
+        assertTrue(balance.hasSufficientBalance(currency, NUMBER(50)));
+        assertFalse(balance.hasSufficientBalance(currency, NUMBER(150)));
+    }
+
+    @Test
+    void testHasSufficientReserveBalance() {
+        Currency currency = Currency.ZAR;
+        balance.getReserveBalances().put(currency, NUMBER(200));
+
+        assertTrue(balance.hasSufficientReserveBalance(currency, NUMBER(150)));
+        assertFalse(balance.hasSufficientReserveBalance(currency, NUMBER(250)));
+    }
+
+    @Test
+    void testModifyBalance() {
+        Currency currency = Currency.BTC;
+        balance.getCurrentBalances().put(currency, NUMBER(500));
+        balance.getReserveBalances().put(currency, NUMBER(100));
+
+        balance.getCurrentBalances().put(currency, NUMBER(600));
+        balance.getReserveBalances().put(currency, NUMBER(200));
+
+        assertEquals(NUMBER(600), balance.getCurrentBalances().get(currency));
+        assertEquals(NUMBER(200), balance.getReserveBalances().get(currency));
+    }
+
+    @Test
+    void testNegativeBalance() {
+        Currency currency = Currency.BTC;
+        balance.getCurrentBalances().put(currency, NUMBER(-10));
+
+        assertFalse(balance.hasSufficientBalance(currency, NUMBER(1)));
+    }
+
+    @Test
+    void testZeroBalanceEdgeCase() {
+        Currency currency = Currency.ZAR;
+        balance.getCurrentBalances().put(currency, NUMBER(0));
+
+        assertTrue(balance.hasSufficientBalance(currency, NUMBER(0)));
+        assertFalse(balance.hasSufficientBalance(currency, NUMBER(1)));
     }
 }
