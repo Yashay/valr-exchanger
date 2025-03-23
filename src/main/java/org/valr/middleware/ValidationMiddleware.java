@@ -9,8 +9,8 @@ import jakarta.validation.Validator;
 import java.util.Set;
 
 public class ValidationMiddleware<T> {
-    private Validator validator;
-    private Class<T> targetClass;
+    private final Validator validator;
+    private final Class<T> targetClass;
 
     public ValidationMiddleware(Class<T> targetClass) {
         this.validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -37,7 +37,7 @@ public class ValidationMiddleware<T> {
                 }
                 context.response()
                         .setStatusCode(400)
-                        .end("Validation errors:\n" + errorMsg.toString());
+                        .end("Validation errors:\n" + errorMsg);
             } else {
                 context.next();
             }
