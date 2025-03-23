@@ -4,7 +4,6 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.valr.model.enums.Currency;
-import org.valr.model.enums.Side;
 import org.valr.util.enums.ValidEnum;
 
 import java.math.BigDecimal;

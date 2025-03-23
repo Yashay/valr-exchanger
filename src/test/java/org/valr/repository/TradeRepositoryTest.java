@@ -6,7 +6,6 @@ import org.valr.model.Order;
 import org.valr.model.Trade;
 import org.valr.model.enums.Side;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -7,7 +7,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.valr.auth.JwtAuthProvider;
-import org.valr.middleware.AuthMiddleware;
 import org.valr.middleware.ValidationMiddleware;
 import org.valr.model.User;
 import org.valr.service.UserService;

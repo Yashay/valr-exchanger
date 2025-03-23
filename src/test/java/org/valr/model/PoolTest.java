@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
 
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.*;
 
