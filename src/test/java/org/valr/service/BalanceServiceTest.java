@@ -52,7 +52,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testReserveBalance_Success() {
+    void testReserveBalanceSuccess() {
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
 
         boolean result = balanceService.reserve("userId", Currency.ZAR, NUMBER(500));
@@ -63,7 +63,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testReserveBalance_FailDueToInsufficientFunds() {
+    void testReserveBalanceFailDueToInsufficientFunds() {
         balanceService.add("userId", Currency.ZAR, NUMBER(100));
 
         boolean result = balanceService.reserve("userId", Currency.ZAR, NUMBER(200));
@@ -74,7 +74,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testUnreserveBalance_Success() {
+    void testUnreserveBalanceSuccess() {
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
         balanceService.reserve("userId", Currency.ZAR, NUMBER(500));
 
@@ -86,7 +86,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testUnreserveBalance_FailDueToInsufficientReservedFunds() {
+    void testUnreserveBalanceFailDueToInsufficientReservedFunds() {
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
         balanceService.reserve("userId", Currency.ZAR, NUMBER(300));
 
@@ -98,7 +98,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testReserveOnOrder_BuyOrder() {
+    void testReserveOnOrderBuyOrder() {
         Order order = createOrder("userId", Side.BUY, NUMBER(100), NUMBER(10));
 
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
@@ -110,7 +110,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testUnreserveOnOrder_BuyOrder() {
+    void testUnreserveOnOrderBuyOrder() {
         Order order = createOrder("userId", Side.BUY, NUMBER(500), NUMBER(2));
 
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
@@ -124,7 +124,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testAdjustBalancesForTrade_BuySide() {
+    void testAdjustBalancesForTradeBuySide() {
         Order takerOrder = createOrder("taker", Side.BUY, NUMBER(1000), NUMBER(2));
         Order makerOrder = createOrder("maker", Side.SELL, NUMBER(1000), NUMBER(2));
 
@@ -138,7 +138,7 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testAdjustBalancesForTrade_SellSide() {
+    void testAdjustBalancesForTradeSellSide() {
         Order takerOrder = createOrder("taker", Side.SELL, NUMBER(1000), NUMBER(2));
         Order makerOrder = createOrder("maker", Side.BUY, NUMBER(1000), NUMBER(2));
 

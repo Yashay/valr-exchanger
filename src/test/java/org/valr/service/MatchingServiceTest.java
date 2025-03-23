@@ -28,7 +28,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_FullMatch() {
+    void testGetPoolsForPartialOrImmediateMatchFullMatch() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
         Pool pool = createPool(Side.SELL, NUMBER(50000), NUMBER(1));
         ConcurrentSkipListMap<BigDecimal, Pool> sellPools = new ConcurrentSkipListMap<>();
@@ -43,7 +43,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_PartialMatch() {
+    void testGetPoolsForPartialOrImmediateMatchPartialMatch() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(2));
         Pool pool = createPool(Side.SELL, NUMBER(50000), NUMBER(1));
         ConcurrentSkipListMap<BigDecimal, Pool> sellPools = new ConcurrentSkipListMap<>();
@@ -58,7 +58,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_NoMatch() {
+    void testGetPoolsForPartialOrImmediateMatchNoMatch() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
 
         when(orderBookRepository.getPoolsOppositeSide(Side.BUY)).thenReturn(new ConcurrentSkipListMap<>());
@@ -70,7 +70,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_VolumeAlreadyFilled() {
+    void testGetPoolsForPartialOrImmediateMatchVolumeAlreadyFilled() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(0));
 
         when(orderBookRepository.getPoolsOppositeSide(Side.BUY))
@@ -83,7 +83,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_BuyPriceTooLow() {
+    void testGetPoolsForPartialOrImmediateMatchBuyPriceTooLow() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
         Pool pool = createPool(Side.SELL, NUMBER(51000), NUMBER(1));
 
@@ -99,7 +99,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_SellPriceTooHigh() {
+    void testGetPoolsForPartialOrImmediateMatchSellPriceTooHigh() {
         Order takerOrder = createOrder(Side.SELL, NUMBER(50000), NUMBER(1));
 
         Pool pool = createPool(Side.BUY, NUMBER(49000), NUMBER(1));
@@ -116,7 +116,7 @@ class MatchingServiceTest {
     }
 
     @Test
-    void testGetPoolsForPartialOrImmediateMatch_TakerBuyFullMatchThreeSellPools() {
+    void testGetPoolsForPartialOrImmediateMatchTakerBuyFullMatchThreeSellPools() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(52000), NUMBER(20));
 
         Pool pool1 = createPool(Side.SELL, NUMBER(50000), NUMBER(10));

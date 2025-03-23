@@ -24,7 +24,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testRegisterUser_ShouldRegisterSuccessfully_WhenUsernameIsUnique() {
+    void testRegisterUserShouldRegisterSuccessfullyWhenUsernameIsUnique() {
         String username = "newUser";
         String password = "password123";
 
@@ -39,7 +39,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testRegisterUser_ShouldFail_WhenUsernameAlreadyExists() {
+    void testRegisterUserShouldFailWhenUsernameAlreadyExists() {
         String username = "existingUser";
         String password = "password123";
         User existingUser = new User(UUID.randomUUID().toString(), username, "anotherPassword");
@@ -53,7 +53,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testAuthenticate_ShouldReturnUser_WhenCredentialsAreCorrect() {
+    void testAuthenticateShouldReturnUserWhenCredentialsAreCorrect() {
         String username = "validUser";
         String password = "correctPassword";
         User user = new User(UUID.randomUUID().toString(), username, password);
@@ -67,7 +67,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testAuthenticate_ShouldReturnEmpty_WhenPasswordIsIncorrect() {
+    void testAuthenticateShouldReturnEmptyWhenPasswordIsIncorrect() {
         String username = "validUser";
         String correctPassword = "correctPassword";
         String wrongPassword = "wrongPassword";
@@ -81,7 +81,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testAuthenticate_ShouldReturnEmpty_WhenUsernameDoesNotExist() {
+    void testAuthenticateShouldReturnEmptyWhenUsernameDoesNotExist() {
         String username = "nonExistentUser";
         String password = "password123";
 

@@ -41,7 +41,7 @@ class TradeServiceTest {
     }
 
     @Test
-    void testExecuteMatches_FullMatch() {
+    void testExecuteMatchesFullMatch() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(2));
         Order makerOrder = createOrder(Side.SELL, NUMBER(50000), NUMBER(2));
         Pool pool = createPool(makerOrder);
@@ -57,7 +57,7 @@ class TradeServiceTest {
     }
 
     @Test
-    void testExecuteMatches_PartialMatch() {
+    void testExecuteMatchesPartialMatch() {
         Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(3));
         Order makerOrder = createOrder(Side.SELL, NUMBER(50000), NUMBER(2));
         Pool pool = createPool(makerOrder);
@@ -81,7 +81,7 @@ class TradeServiceTest {
 
         JsonArray result = tradeService.getRecentTradeHistory(userId);
 
-        assertTrue(expectedTrades.size() == result.size());
+        assertEquals(expectedTrades.size(), result.size());
         assertTrue(expectedTrades.getValue(0).toString().equalsIgnoreCase(result.getValue(0).toString()));
     }
 }

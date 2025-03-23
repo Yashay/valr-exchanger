@@ -46,7 +46,7 @@ class OrderBookServiceTest {
     }
 
     @Test
-    void testPlaceLimitOrder_FOK_Success() {
+    void testPlaceLimitOrderFOKSuccess() {
         Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
@@ -61,7 +61,7 @@ class OrderBookServiceTest {
     }
 
     @Test
-    void testPlaceLimitOrder_FOK_Fail_NotFillable() {
+    void testPlaceLimitOrderFOKFailNotFillable() {
         Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
@@ -73,7 +73,7 @@ class OrderBookServiceTest {
     }
 
     @Test
-    void testPlaceLimitOrder_IOC_Success() {
+    void testPlaceLimitOrderIOCSuccess() {
         Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.IOC);
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
@@ -87,7 +87,7 @@ class OrderBookServiceTest {
     }
 
     @Test
-    void testPlaceLimitOrder_GTC_Success() {
+    void testPlaceLimitOrderGTCSuccess() {
         Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.GTC);
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
@@ -101,7 +101,7 @@ class OrderBookServiceTest {
     }
 
     @Test
-    void testPlaceLimitOrder_InsufficientFunds() {
+    void testPlaceLimitOrderInsufficientFunds() {
         Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
         when(balanceService.reserveOnOrder(order)).thenReturn(false);
 
