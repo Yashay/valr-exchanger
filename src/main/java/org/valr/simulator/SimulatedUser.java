@@ -18,11 +18,11 @@ public class SimulatedUser {
     private final WebClient client;
 
 
-    public SimulatedUser(Vertx vertx) {
+    public SimulatedUser(WebClient client) {
         Random random = new Random();
         username = "User" + random.nextInt(1000000);
         password = "Pass" + random.nextInt(1000000);
-        client = WebClient.create(vertx);
+        this.client = client;
     }
 
     public JsonObject getRegistrationPayload() {

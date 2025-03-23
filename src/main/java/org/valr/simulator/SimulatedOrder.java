@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
+import org.valr.model.enums.TimeInForce;
 
 import java.math.BigDecimal;
 import java.util.Random;
@@ -20,6 +21,7 @@ public class SimulatedOrder {
     private ExchangePair exchangePair;
     private BigDecimal price;
     private BigDecimal quantity;
+    private TimeInForce timeInForce;
 
     public SimulatedOrder(Random random) {
         /**
@@ -35,31 +37,29 @@ public class SimulatedOrder {
          */
         exchangePair = ExchangePair.BTCZAR;
         side = random.nextBoolean() ? Side.BUY : Side.SELL;
-        price = BigDecimal.valueOf(random.nextInt(4990, 5000)); // 50000 - 51000
-        quantity = BigDecimal.valueOf(random.nextInt(1, 100)); // 0.1 - 0.6 BTC
+        price = BigDecimal.valueOf(random.nextInt(500, 5000));
+        quantity = BigDecimal.valueOf(random.nextInt(1, 100));
+        timeInForce = TimeInForce.GTC;
     }
 
     public JsonObject sellOrder() {
         exchangePair = ExchangePair.BTCZAR;
         side = Side.SELL;
-        price = BigDecimal.valueOf(2500); // 50000 - 51000
-        quantity = BigDecimal.valueOf(5); // 0.1 - 0.6 BTC
         return this.getOrderPayload();
     }
 
     public JsonObject buyOrder() {
         exchangePair = ExchangePair.BTCZAR;
         side = Side.BUY;
-        price = BigDecimal.valueOf(10000); // 50000 - 51000
-        quantity = BigDecimal.valueOf(10); // 0.1 - 0.6 BTC
         return this.getOrderPayload();
     }
 
     public JsonObject getOrderPayload() {
         return new JsonObject()
-                .put("pair", exchangePair)
+                .put("exchangePair", exchangePair)
                 .put("side", side)
                 .put("price", price)
+                .put("timeInForce", timeInForce)
                 .put("quantity", quantity);
     }
 }

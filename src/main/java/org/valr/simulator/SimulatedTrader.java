@@ -8,17 +8,20 @@ import java.util.Random;
 public class SimulatedTrader {
     private final Vertx vertx;
     private final SimulatedUser user;
+    private final SimulatedDepositer depositer;
     private final WebClient client;
-    private final Random random = new Random();
+    private final Random random;
 
-    public SimulatedTrader(Vertx vertx, SimulatedUser user) {
+    public SimulatedTrader(Vertx vertx, SimulatedUser user, SimulatedDepositer depositer, WebClient client, Random random) {
         this.vertx = vertx;
         this.user = user;
-        this.client = WebClient.create(vertx);
+        this.depositer = depositer;
+        this.client = client;
+        this.random = random;
     }
 
     public void startTrading() {
-        user.register(() -> user.login(() -> vertx.setPeriodic(1000, id -> placeRandomOrder())));
+        user.register(() -> user.login(() -> vertx.setPeriodic(10, id -> placeRandomOrder())));
     }
 
     private void placeRandomOrder() {
@@ -31,24 +34,16 @@ public class SimulatedTrader {
         client.post(8080, "localhost", "/api/orders/limit")
                 .putHeader("Authorization", "Bearer " + user.getToken())
                 .sendJson(order.sellOrder(), ar -> {
-                    if (ar.succeeded()) {
-//                        System.out.println(ar.result().bodyAsString());
-//                        System.out.println("");
-                        int i = 0;
-                    } else {
-                        System.err.println("❌ Order placement failed: " + ar.cause().getMessage());
+                    if (!ar.succeeded()) {
+                        System.err.println("Order placement failed: " + ar.cause().getMessage());
                     }
                 });
 
         client.post(8080, "localhost", "/api/orders/limit")
                 .putHeader("Authorization", "Bearer " + user.getToken())
                 .sendJson(order.buyOrder(), ar -> {
-                    if (ar.succeeded()) {
-//                        System.out.println(ar.result().bodyAsString());
-//                        System.out.println("");
-                        int i = 0;
-                    } else {
-                        System.err.println("❌ Order placement failed: " + ar.cause().getMessage());
+                    if (!ar.succeeded()) {
+                        System.err.println("Order placement failed: " + ar.cause().getMessage());
                     }
                 });
     }
