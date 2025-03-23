@@ -65,7 +65,7 @@ class DepositTest {
 
         assertNull(deposit.getCurrency());
         assertEquals(NUMBER(0), deposit.getAmount());
-        assertNotNull(deposit.getIntiated());
+        assertNotNull(deposit.getInitiated());
     }
 
 }
