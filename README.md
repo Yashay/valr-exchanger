@@ -1,6 +1,10 @@
 Project: Valr Exchanger API
 ===========================
 
+![Build Status](https://github.com/Yashay/valr-exchanger/actions/workflows/gradle.yml/badge.svg)
+
+--------
+
 Overview
 --------
 
