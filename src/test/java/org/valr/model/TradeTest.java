@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.*;
 
@@ -32,12 +34,12 @@ class TradeTest {
 
     @Test
     void testTradeComparison() {
-        Trade trade1 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1));
-        Trade trade2 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1));
+        Trade trade1 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(10));
+        Trade trade2 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(20));
 
         assertTrue(trade1.compareTo(trade2) < 0 || trade1.compareTo(trade2) > 0);
 
-        Trade laterTrade = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1));
+        Trade laterTrade = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(30));
 
         assertTrue(trade1.compareTo(laterTrade) < 0);
     }

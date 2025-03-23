@@ -35,9 +35,9 @@ public class Trade implements Comparable<Trade> {
     
     private final Instant tradedAt;
 
-    public Trade(Order takerOrder, Order makerOrder, BigDecimal price, BigDecimal quantity) {
+    public Trade(Order takerOrder, Order makerOrder, BigDecimal price, BigDecimal quantity, Instant tradedAt) {
         tradeId = UUID.randomUUID().toString();
-        tradedAt = Instant.now();
+        this.tradedAt = tradedAt;
         this.price = price;
         this.quantity = quantity;
         this.quoteVolume = price.multiply(quantity);
@@ -50,10 +50,17 @@ public class Trade implements Comparable<Trade> {
         this.currenyExchangePair = takerOrder.getExchangePair();
     }
 
+    public Trade(Order takerOrder, Order makerOrder, BigDecimal price, BigDecimal quantity) {
+        this(takerOrder, makerOrder, price, quantity, Instant.now());
+    }
+
     @Override
     public int compareTo(Trade otherTrade) {
         int timeComparison = this.tradedAt.compareTo(otherTrade.tradedAt);
         if (timeComparison != 0) return timeComparison;
+
+        int tradeIdComparison = this.tradeId.compareTo(otherTrade.tradeId);
+        if (tradeIdComparison != 0) return tradeIdComparison;
 
         int priceComparison = otherTrade.price.compareTo(this.price);
         if (priceComparison != 0) return priceComparison;
@@ -61,6 +68,6 @@ public class Trade implements Comparable<Trade> {
         int quantityComparison = otherTrade.quantity.compareTo(this.quantity);
         if (quantityComparison != 0) return quantityComparison;
 
-        return this.tradeId.compareTo(otherTrade.tradeId);
+        return 0;
     }
 }
