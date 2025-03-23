@@ -9,6 +9,7 @@ import org.valr.repository.BalanceRepository;
 
 import java.math.BigDecimal;
 
+//TODO Balance needs rework it'll break in multithreaded environments
 public class BalanceService {
 
     private final BalanceRepository balanceRepository;
