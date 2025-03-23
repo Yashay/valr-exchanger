@@ -67,6 +67,8 @@ curl --location 'http://localhost:8080/api/users/register' \
       "username": "user123",
       "password": "password123"
 }'
+```
+```
 ALL FIELDS ARE REQUIRED
 ```
 *   **POST /api/users/login** — Authenticate a user and return JWT
@@ -78,6 +80,8 @@ curl --location 'http://localhost:8080/api/users/login' \
   "password": "password123"
 }'
 
+```
+```
 THIS GENERATES A TOKEN COPY TOKEN
 ALL FIELDS ARE REQUIRED
 ```  
@@ -93,6 +97,8 @@ curl --location 'http://localhost:8080/api/orders/limit' \
   "quantity": 20,
   "timeInForce": "GTC"
 }'
+```
+```
 ALL FIELDS ARE REQUIRED
 ```  
 | Attributes   | Value (Options)                             |
@@ -110,6 +116,8 @@ curl --location 'http://localhost:8080/api/balance/deposit' \
   "currency": "BTC",
   "amount" : 100
 }'
+```
+```
 ALL FIELDS ARE REQUIRED
 ```
 * **GET /api/trade/history** — Get recent trades (JWT required)
