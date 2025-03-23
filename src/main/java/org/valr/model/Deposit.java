@@ -23,12 +23,12 @@ public class Deposit {
     @DecimalMin(value = "0.000000001", message = "Amount must be greater than zero")
     final BigDecimal amount;
 
-    final Instant intiated;
+    final Instant initiated;
 
     public Deposit() {
         this.currency = null;
         this.amount = BigDecimal.ZERO;
-        this.intiated = Instant.now();
+        this.initiated = Instant.now();
     }
 
 }
