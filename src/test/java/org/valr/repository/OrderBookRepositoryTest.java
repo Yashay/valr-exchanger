@@ -24,7 +24,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testAddOrder_BuyOrder_ShouldBeAddedToBuyPool() {
+    void testAddOrderBuyOrderShouldBeAddedToBuyPool() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
 
         orderBookRepository.addOrder(buyOrder);
@@ -35,7 +35,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testAddOrder_SellOrder_ShouldBeAddedToSellPool() {
+    void testAddOrderSellOrderShouldBeAddedToSellPool() {
         Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
 
         orderBookRepository.addOrder(sellOrder);
@@ -46,7 +46,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testRemoveOrder_OrderExists_ShouldBeRemoved() {
+    void testRemoveOrderOrderExistsShouldBeRemoved() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
 
@@ -57,7 +57,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testRemoveOrder_OrderNotInPool_ShouldNotCauseError() {
+    void testRemoveOrderOrderNotInPoolShouldNotCauseError() {
         Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
 
         orderBookRepository.removeOrder(sellOrder);
@@ -67,7 +67,7 @@ class OrderBookRepositoryTest {
     }
     
     @Test
-    void testGetPoolByOrder_ShouldReturnCorrectPool() {
+    void testGetPoolByOrderShouldReturnCorrectPool() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
 
@@ -78,7 +78,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testGetPoolsOppositeSide_ShouldReturnCorrectPool() {
+    void testGetPoolsOppositeSideShouldReturnCorrectPool() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
@@ -86,12 +86,12 @@ class OrderBookRepositoryTest {
 
         ConcurrentSkipListMap<BigDecimal, Pool> oppositeSidePools = orderBookRepository.getPoolsOppositeSide(Side.BUY);
 
-        assertTrue(oppositeSidePools.size() == 1, "Sell pool should be present in the opposite sell map.");
+        assertEquals(1, oppositeSidePools.size(), "Sell pool should be present in the opposite sell map.");
         assertTrue(oppositeSidePools.get(sellOrder.getPrice()).getOrders().contains(sellOrder), "Sell order should be present in the sell pool");
     }
 
     @Test
-    void testRemoveOrder_WhenPoolIsEmpty_ShouldRemovePool() {
+    void testRemoveOrderWhenPoolIsEmptyShouldRemovePool() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
         orderBookRepository.removeOrder(buyOrder);
@@ -102,7 +102,7 @@ class OrderBookRepositoryTest {
     }
 
     @Test
-    void testRemoveOrder_WhenOrderIsLastInPool_ShouldRemovePool() {
+    void testRemoveOrderWhenOrderIsLastInPoolShouldRemovePool() {
         Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
 

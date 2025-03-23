@@ -23,7 +23,7 @@ class TradeRepositoryTest {
     }
 
     @Test
-    void testAddTrade_ValidTrade_ShouldBeStored() {
+    void testAddTradeValidTradeShouldBeStored() {
         Order buyerOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
         Order sellerOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
         Trade trade = new Trade(buyerOrder, sellerOrder, NUMBER(50000), NUMBER(10));
@@ -40,14 +40,14 @@ class TradeRepositoryTest {
     }
 
     @Test
-    void testGetTradeHistory_NoTrades_ShouldReturnEmptySet() {
+    void testGetTradeHistoryNoTradesShouldReturnEmptySet() {
         ConcurrentSkipListSet<Trade> user1Trades = tradeRepository.getTradeHistory("user1");
         assertNotNull(user1Trades, "Trade history should not be null.");
         assertTrue(user1Trades.isEmpty(), "Trade history should be empty for a user with no trades.");
     }
 
     @Test
-    void testGetTradeHistory_ExistingTrades_ShouldReturnCorrectTrades() {
+    void testGetTradeHistoryExistingTradesShouldReturnCorrectTrades() {
         Order buyerOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
         Order sellerOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
         Trade trade = new Trade(buyerOrder, sellerOrder, NUMBER(50000), NUMBER(10));
@@ -60,7 +60,7 @@ class TradeRepositoryTest {
     }
 
     @Test
-    void testAddTrade_MultipleTrades_ShouldBeStoredForAllUsers() {
+    void testAddTradeMultipleTradesShouldBeStoredForAllUsers() {
         Order user1BuyOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
         Order user2SellOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
         Trade tradeUser1User2 = new Trade(user1BuyOrder, user2SellOrder, NUMBER(50000), NUMBER(10));
@@ -88,7 +88,7 @@ class TradeRepositoryTest {
     }
 
     @Test
-    void testGetTradeHistory_TradeHistoryForNonExistentUser_ShouldReturnEmptySet() {
+    void testGetTradeHistoryTradeHistoryForNonExistentUserShouldReturnEmptySet() {
         ConcurrentSkipListSet<Trade> nonExistentUserTrades = tradeRepository.getTradeHistory("user999");
         assertNotNull(nonExistentUserTrades, "Trade history for non-existent user should not be null.");
         assertTrue(nonExistentUserTrades.isEmpty(), "Trade history should be empty for a user that doesn't exist.");

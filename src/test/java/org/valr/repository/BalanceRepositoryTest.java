@@ -15,7 +15,7 @@ class BalanceRepositoryTest {
     }
 
     @Test
-    void testGetBalance_NewUser() {
+    void testGetBalanceNewUser() {
         String userId = "user123";
         Balance balance = balanceRepository.getBalance(userId);
         assertNotNull(balance);
@@ -23,7 +23,7 @@ class BalanceRepositoryTest {
     }
 
     @Test
-    void testGetBalance_ExistingUser() {
+    void testGetBalanceExistingUser() {
         String userId = "user123";
         Balance initialBalance = balanceRepository.getBalance(userId);
         Balance retrievedBalance = balanceRepository.getBalance(userId);
@@ -31,7 +31,7 @@ class BalanceRepositoryTest {
     }
 
     @Test
-    void testGetBalance_MultipleUsers() {
+    void testGetBalanceMultipleUsers() {
         String userId1 = "user123";
         String userId2 = "user456";
         Balance balance1 = balanceRepository.getBalance(userId1);
@@ -42,7 +42,7 @@ class BalanceRepositoryTest {
     }
 
     @Test
-    void testGetBalance_UserIdNotNull() {
+    void testGetBalanceUserIdNotNull() {
         String userId = "user123";
         Balance balance = balanceRepository.getBalance(userId);
         assertNotNull(balance.getUserId());

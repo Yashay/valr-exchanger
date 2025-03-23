@@ -18,7 +18,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testSaveUser_ValidUser() {
+    void testSaveUserValidUser() {
         User user = new User("userId123", "user123", "password");
 
         userRepository.save(user);
@@ -30,14 +30,14 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testSaveUser_NullUser() {
+    void testSaveUserNullUser() {
         assertThrows(IllegalArgumentException.class, () -> {
             userRepository.save(null);
         });
     }
 
     @Test
-    void testSaveUser_NullUsername() {
+    void testSaveUserNullUsername() {
         User user = new User("userId123", null, "password");
         assertThrows(IllegalArgumentException.class, () -> {
             userRepository.save(user);
@@ -45,13 +45,13 @@ class UserRepositoryTest {
     }
 
     @Test
-    void testFindByUsername_UserNotFound() {
+    void testFindByUsernameUserNotFound() {
         Optional<User> retrievedUser = userRepository.findByUsername("nonExistentUser");
         assertFalse(retrievedUser.isPresent());
     }
 
     @Test
-    void testFindByUsername_UserFound() {
+    void testFindByUsernameUserFound() {
         User user = new User("userId123", "user123", "password");
         userRepository.save(user);
 
