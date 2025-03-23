@@ -6,13 +6,13 @@ import org.valr.model.Trade;
 import java.time.Instant;
 
 public class TradeDTO {
-    private String id;
-    private String price;
-    private String quantity;
-    private String currencyPair;
-    private String takerSide;
-    private Instant tradedAt;
-    private String quoteVolume;
+    private final String id;
+    private final String price;
+    private final String quantity;
+    private final String currencyPair;
+    private final String takerSide;
+    private final Instant tradedAt;
+    private final String quoteVolume;
 
     public static TradeDTO from(Trade trade) {
         return new TradeDTO(trade);
