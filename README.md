@@ -12,7 +12,7 @@ Features
 *   **JWT Authentication** for secure access
 *   **Middleware** for Validation and Authentication
 *   **Trade and Order Management** for cryptocurrency transactions
-*   **Balance Deposit Services** for adding funds 
+*   **Balance Deposit Services** for adding funds
 
 Installation
 ------------
@@ -67,6 +67,7 @@ curl --location 'http://localhost:8080/api/users/register' \
       "username": "user123",
       "password": "password123"
 }'
+ALL FIELDS ARE REQUIRED
 ```
 *   **POST /api/users/login** — Authenticate a user and return JWT
 ```
@@ -78,6 +79,7 @@ curl --location 'http://localhost:8080/api/users/login' \
 }'
 
 THIS GENERATES A TOKEN COPY TOKEN
+ALL FIELDS ARE REQUIRED
 ```  
 * **POST /api/orders/limit** — Place a new order (JWT required)
 ```
@@ -91,7 +93,14 @@ curl --location 'http://localhost:8080/api/orders/limit' \
   "quantity": 20,
   "timeInForce": "GTC"
 }'
+ALL FIELDS ARE REQUIRED
 ```  
+| Attributes   | Value (Options)                             |
+|--------------|----------------------------------------------|
+| side         | SELL/BUY                                     | 
+| timeInForce  | GTC/IOC/FOK                                  |
+
+
 * **POST /api/balance/deposit** — Deposit into account (JWT required)
 ```
 curl --location 'http://localhost:8080/api/balance/deposit' \
@@ -101,15 +110,16 @@ curl --location 'http://localhost:8080/api/balance/deposit' \
   "currency": "BTC",
   "amount" : 100
 }'
+ALL FIELDS ARE REQUIRED
 ```
 * **GET /api/trade/history** — Get recent trades (JWT required)
-```angular2html
+```
 curl --location 'http://localhost:8080/api/trade/history' \
 --header 'Authorization: Bearer <INSERT TOKEN>' \
 --data ''
 ```  
 * **GET /api/orderbook** — Get snapshot of orders in orderbook
-```angular2html
+```
 curl --location 'http://localhost:8080/api/orderbook'
 ```
 
