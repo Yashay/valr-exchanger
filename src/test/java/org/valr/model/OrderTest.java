@@ -71,13 +71,13 @@ class OrderTest {
 
     @Test
     void testOrderComparison() {
-        Order order1 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
-        Order order2 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order order1 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 10);
+        Order order2 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 20);
 
         assertEquals(-1, order1.compareTo(order2));
         assertEquals(1, order2.compareTo(order1));
 
-        Order order3 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order order3 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 30);
         order3.setTimestamp(order1.getTimestamp());
 
         assertEquals(-1, order1.compareTo(order3));

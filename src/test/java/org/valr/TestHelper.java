@@ -34,6 +34,10 @@ public class TestHelper {
         return order;
     }
 
+    public static Order createOrder(Side side, BigDecimal price, BigDecimal quantity, long timeCreated) {
+        return createOrder("userId", side, price, quantity, TimeInForce.GTC, Instant.ofEpochSecond(timeCreated), counter.incrementAndGet());
+    }
+
     public static Order createOrder(Side side, BigDecimal price, BigDecimal quantity) {
         return createOrder("userId", side, price, quantity, TimeInForce.GTC, Instant.now(), counter.incrementAndGet());
     }
