@@ -24,7 +24,7 @@ public class TradeVerticle extends AbstractVerticle {
     }
 
     private void getTradeHistorySnapshot(RoutingContext context) {
-        String userId = AuthMiddleware.getUserIdFromContext(context);
+        String userId = authMiddleware.getUserIdFromContext(context);
         JsonArray userTradeHistory = tradeService.getRecentTradeHistory(userId);
         context.response().setStatusCode(200).end(userTradeHistory.encodePrettily());
     }

@@ -33,7 +33,7 @@ public class AuthMiddleware {
                 });
     }
 
-    public static String getUserIdFromContext(RoutingContext context) {
+    public String getUserIdFromContext(RoutingContext context) {
         User user = context.get("user");
         if (user != null) {
             return user.principal().getString("sub");

@@ -38,7 +38,7 @@ public class OrderBookVerticle extends AbstractVerticle {
     }
 
     private void placeLimitOrder(RoutingContext context) {
-        String userId = AuthMiddleware.getUserIdFromContext(context);
+        String userId = authMiddleware.getUserIdFromContext(context);
         JsonObject data = context.body().asJsonObject();
         Order order = data.mapTo(Order.class);
         JsonObject orderInformation = orderBookService.placeLimitOrder(userId, order);

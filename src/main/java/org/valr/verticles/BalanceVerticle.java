@@ -12,10 +12,12 @@ import org.valr.service.BalanceService;
 
 public class BalanceVerticle extends AbstractVerticle {
     private final BalanceService balanceService;
+    private final AuthMiddleware authMiddleware;
 
     @Inject
     public BalanceVerticle(Router router, AuthMiddleware authMiddleware, BalanceService balanceService) {
         this.balanceService = balanceService;
+        this.authMiddleware = authMiddleware;
         setupRoutes(router, authMiddleware);
     }
 
@@ -27,7 +29,7 @@ public class BalanceVerticle extends AbstractVerticle {
     }
 
     private void depositCurrencyIntoAccount(RoutingContext context) {
-            String userId = AuthMiddleware.getUserIdFromContext(context);
+            String userId = authMiddleware.getUserIdFromContext(context);
             JsonObject data = context.body().asJsonObject();
             Deposit deposit = data.mapTo(Deposit.class);
             balanceService.add(userId, deposit.getCurrency(), deposit.getAmount());
