@@ -2,7 +2,7 @@ Project: Valr Exchanger API
 ===========================
 
 ![Build Status](https://github.com/Yashay/valr-exchanger/actions/workflows/gradle.yml/badge.svg)
-
+[![codecov](https://codecov.io/gh/Yashay/valr-exchanger/graph/badge.svg?token=QDX70K1QWD)](https://codecov.io/gh/Yashay/valr-exchanger)
 --------
 
 Overview
