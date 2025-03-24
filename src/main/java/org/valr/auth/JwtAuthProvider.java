@@ -15,7 +15,7 @@ public class JwtAuthProvider {
     private static final String JWT_HASHING_ALGORITHM = "HS256";
     private static final String KEY_HASHING_ALGORITHM = "HmacSHA256";
     private static final int EXPIRATION_TIME = 60 * 60 * 24 * 30;
-    // hard to test
+    // for testing set the value arbitrarily otherwise restarts require new JWT
     private static final String SECRET_KEY = "Hello-World!";
     private final JWTAuth jwtAuth;
 
