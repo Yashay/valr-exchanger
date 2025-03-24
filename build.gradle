@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("application")
+    id ("jacoco")
 }
 
 group = 'org.valr'
@@ -8,6 +9,10 @@ version = '1.0-SNAPSHOT'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+jacoco {
+    toolVersion = "0.8.8"
 }
 
 repositories {
@@ -68,5 +73,16 @@ tasks.withType(Test).configureEach {
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"
+    }
+}
+
+tasks.withType(Test) {
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
     }
 }
