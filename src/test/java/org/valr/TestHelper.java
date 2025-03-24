@@ -19,6 +19,10 @@ public class TestHelper {
         return BigDecimal.valueOf(number);
     }
 
+    public static BigDecimal NUMBER(String number) {
+        return new BigDecimal(number);
+    }
+
     // TODO this needs some refactoring from here on
     public static Order createOrder(String userId, Side side, BigDecimal price, BigDecimal quantity, TimeInForce timeInForce, Instant timeCreated, long sequence) {
         Order order = new Order();
