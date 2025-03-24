@@ -154,10 +154,24 @@ Notes
 *   Data will reset on server restart.
 *   Future versions may include persistent storage options.
 
+
+Tasks to be done
+-------
+
+- [ ] Add meaningful messages on assertions
+- [ ] Look into multi-threaded behaviour of the Balance Service
+- [ ] Refactor TestHelper
+- [ ] Separate out the Model DAO from DTO
+- [ ] Investigate whether ValidationMiddleware can be injected via Guice
+- [ ] Add tests for Enums methods
+- [ ] Add a debug flag to project
+
 Project Structure
 -------
 
 ![Order Book Architecture](./class-diagram.png)
+
+
 
 License
 -------
