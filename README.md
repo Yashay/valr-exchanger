@@ -165,6 +165,7 @@ Tasks to be done
 - [ ] Investigate whether ValidationMiddleware can be injected via Guice
 - [ ] Add tests for Enums methods
 - [ ] Add a debug flag to project
+- [ ] Style nitpicks need to addressed (e.g. blank lines, wild card package imports and method ordering)
 
 Project Structure
 -------
