@@ -18,10 +18,10 @@ public class BalanceVerticle extends AbstractVerticle {
     public BalanceVerticle(Router router, AuthMiddleware authMiddleware, BalanceService balanceService) {
         this.balanceService = balanceService;
         this.authMiddleware = authMiddleware;
-        setupRoutes(router, authMiddleware);
+        setupRoutes(router);
     }
 
-    private void setupRoutes(Router router, AuthMiddleware authMiddleware) {
+    private void setupRoutes(Router router) {
         router.post("/api/balance/deposit")
                 .handler(authMiddleware::authenticate)
                 .handler(new ValidationMiddleware<>(Deposit.class)::validate)
