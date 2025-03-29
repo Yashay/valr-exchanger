@@ -1,6 +1,7 @@
 package org.valr.verticles;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -13,10 +14,12 @@ public class MainVerticle extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
 
         vertx.deployVerticle(AppRegistry.injector.getInstance(UserVerticle.class));
+        // force the placement algorithm to run on one thread to prevent data drift
+        // TODO: Add verticle deployment configuration class
+        vertx.deployVerticle(AppRegistry.injector.getInstance(PlacementVerticle.class), new DeploymentOptions().setInstances(1));
         vertx.deployVerticle(AppRegistry.injector.getInstance(OrderBookVerticle.class));
         vertx.deployVerticle(AppRegistry.injector.getInstance(TradeVerticle.class));
         vertx.deployVerticle(AppRegistry.injector.getInstance(BalanceVerticle.class));
-//        vertx.deployVerticle(new SimulationManager());
 
         vertx.createHttpServer()
                 .requestHandler(router)
