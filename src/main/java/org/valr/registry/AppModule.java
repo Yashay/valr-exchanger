@@ -120,4 +120,16 @@ public class AppModule extends AbstractModule {
     public OrderBookVerticle provideOrderBookVerticle(Router router, AuthMiddleware authMiddleware, OrderBookService orderBookService) {
         return new OrderBookVerticle(router, authMiddleware, orderBookService);
     }
+
+    @Provides
+    @Singleton
+    public PlacementService providePlacementService(OrderBookRepository orderBookRepository, TradeService tradeService, BalanceService balanceService, MatchingService matchingService) {
+        return new PlacementService(orderBookRepository, tradeService, balanceService, matchingService);
+    }
+
+    @Provides
+    @Singleton
+    public PlacementVerticle providePlacementVerticle(Router router, AuthMiddleware authMiddleware, PlacementService placementService) {
+        return new PlacementVerticle(router, authMiddleware, placementService);
+    }
 }
