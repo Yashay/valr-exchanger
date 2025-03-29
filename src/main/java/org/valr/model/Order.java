@@ -70,6 +70,4 @@ public class Order implements Comparable<Order> {
         int sequenceComparison = this.sequence.compareTo(other.sequence);
         return sequenceComparison;
     }
-
-    //TODO perhaps json annotated constructor?
 }
