@@ -21,7 +21,7 @@ public class OrderBookService {
         this.orderBookRepository = orderBookRepository;
     }
 
-    public JsonObject getOrderBookSnapshot(String currencyPair) {
+    public JsonObject getOrderBookSnapshot() {
         JsonObject orderBookSnapshot = new JsonObject();
 
         JsonArray asks = buildSideSnapshot(orderBookRepository.getSellPoolMap());
