@@ -37,7 +37,7 @@ class OrderBookServiceTest {
         when(orderBookRepository.getBuyPoolMap()).thenReturn(new ConcurrentSkipListMap<BigDecimal, Pool>());
         when(orderBookRepository.getOrderCounter()).thenReturn(new AtomicLong(42));
 
-        JsonObject snapshot = orderBookService.getOrderBookSnapshot("BTCZAR");
+        JsonObject snapshot = orderBookService.getOrderBookSnapshot();
 
         assertNotNull(snapshot);
         assertEquals(0, snapshot.getJsonArray("Asks").size());
@@ -58,7 +58,7 @@ class OrderBookServiceTest {
         when(orderBookRepository.getBuyPoolMap()).thenReturn(buyPoolMap);
         when(orderBookRepository.getOrderCounter()).thenReturn(new AtomicLong(42));
 
-        JsonObject snapshot = orderBookService.getOrderBookSnapshot("BTCZAR");
+        JsonObject snapshot = orderBookService.getOrderBookSnapshot();
 
         String asksPrice = snapshot.getJsonArray("Asks").getJsonObject(0).getString("price");
         String bidsPrice = snapshot.getJsonArray("Bids").getJsonObject(0).getString("price");

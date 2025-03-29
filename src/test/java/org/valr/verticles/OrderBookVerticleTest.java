@@ -49,7 +49,7 @@ public class OrderBookVerticleTest {
     @Test
     void testGetOrderBookSnapshotSuccess(Vertx vertx, VertxTestContext testContext) {
         JsonObject mockSnapshot = new JsonObject().put("bids", "[]").put("asks", "[]");
-        when(orderBookService.getOrderBookSnapshot("BTCZAR")).thenReturn(mockSnapshot);
+        when(orderBookService.getOrderBookSnapshot()).thenReturn(mockSnapshot);
 
         webClient.get( "/api/orderbook")
                 .send()

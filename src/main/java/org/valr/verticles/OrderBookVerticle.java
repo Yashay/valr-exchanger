@@ -22,8 +22,7 @@ public class OrderBookVerticle extends AbstractVerticle {
     }
 
     private void getOrderBookSnapshot(RoutingContext context) {
-        //TODO this should not be statically coded
-        JsonObject orderBookSnapshot = orderBookService.getOrderBookSnapshot("BTCZAR");
+        JsonObject orderBookSnapshot = orderBookService.getOrderBookSnapshot();
         context.response().setStatusCode(201).end(orderBookSnapshot.encodePrettily());
     }
 }
