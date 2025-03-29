@@ -29,10 +29,10 @@ public class BalanceVerticle extends AbstractVerticle {
     }
 
     private void depositCurrencyIntoAccount(RoutingContext context) {
-            String userId = authMiddleware.getUserIdFromContext(context);
-            JsonObject data = context.body().asJsonObject();
-            Deposit deposit = data.mapTo(Deposit.class);
-            balanceService.add(userId, deposit.getCurrency(), deposit.getAmount());
-            context.response().setStatusCode(200).end();
+        String userId = authMiddleware.getUserIdFromContext(context);
+        JsonObject data = context.body().asJsonObject();
+        Deposit deposit = data.mapTo(Deposit.class);
+        balanceService.add(userId, deposit.getCurrency(), deposit.getAmount());
+        context.response().setStatusCode(200).end();
     }
 }
