@@ -12,10 +12,7 @@ import org.valr.repository.OrderBookRepository;
 import org.valr.repository.TradeRepository;
 import org.valr.repository.UserRepository;
 import org.valr.service.*;
-import org.valr.verticles.BalanceVerticle;
-import org.valr.verticles.OrderBookVerticle;
-import org.valr.verticles.TradeVerticle;
-import org.valr.verticles.UserVerticle;
+import org.valr.verticles.*;
 
 public class AppModule extends AbstractModule {
 
