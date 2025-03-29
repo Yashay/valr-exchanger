@@ -108,14 +108,14 @@ public class AppModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public OrderBookService provideOrderBookRepository(OrderBookRepository orderBookRepository, TradeService tradeService, BalanceService balanceService, MatchingService matchingService) {
-        return new OrderBookService(orderBookRepository, tradeService, balanceService, matchingService);  
+    public OrderBookService provideOrderBookService(OrderBookRepository orderBookRepository) {
+        return new OrderBookService(orderBookRepository);
     }
 
     @Provides
     @Singleton
-    public OrderBookVerticle provideOrderBookVerticle(Router router, AuthMiddleware authMiddleware, OrderBookService orderBookService) {
-        return new OrderBookVerticle(router, authMiddleware, orderBookService);
+    public OrderBookVerticle provideOrderBookVerticle(Router router, OrderBookService orderBookService) {
+        return new OrderBookVerticle(router, orderBookService);
     }
 
     @Provides
