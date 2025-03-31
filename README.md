@@ -86,7 +86,7 @@ curl --location 'http://localhost:8080/api/users/login' \
 
 ```
 ```
-THIS GENERATES A TOKEN COPY TOKEN
+THIS GENERATES A TOKEN (COPY THE TOKEN)
 ALL FIELDS ARE REQUIRED
 ```  
 * **POST /api/orders/limit** — Place a new order (JWT required)
@@ -166,6 +166,7 @@ Tasks to be done
 - [ ] Add tests for Enums methods
 - [ ] Add a debug flag to project
 - [ ] Style nitpicks need to addressed (e.g. blank lines, wild card package imports and method ordering)
+- [ ] Write unit test for PlacementVerticle (event-bus async operation involved)
 
 Project Structure
 -------
