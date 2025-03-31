@@ -1,7 +1,6 @@
 package org.valr.service;
 
 import com.google.inject.Inject;
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.valr.model.Order;
 import org.valr.model.Pool;

@@ -6,7 +6,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.ext.web.Router;
 import org.valr.middleware.AuthMiddleware;
 import org.valr.model.Order;
-import org.valr.registry.AppRegistry;
 import org.valr.service.PlacementService;
 
 import java.io.IOException;
