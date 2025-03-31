@@ -25,12 +25,7 @@ public class PlacementService {
         this.matchingService = matchingService;
     }
 
-    public JsonObject placeLimitOrder(Order order) {
-        boolean isReserved = balanceService.reserveOnOrder(order);
-        if (!isReserved) {
-            return formatOrderConfirmation(order.getOrderId(), isReserved);
-        }
-
+    public void placeLimitOrder(Order order) {
         Pair<ConcurrentSkipListSet<Pool>, Boolean> validPartialOrImmediatePools = matchingService.getPoolsForPartialOrImmediateMatch(order);
         ConcurrentSkipListSet<Pool> validPools = validPartialOrImmediatePools.getLeft();
         Boolean isVolumeCompletelyFillable = validPartialOrImmediatePools.getRight();
@@ -40,7 +35,6 @@ public class PlacementService {
             case IOC -> handleIOC(order, validPools);
             case GTC -> handleGTC(order, validPools);
         }
-        return new JsonObject();
     }
 
     private void handleFOK(Order order, ConcurrentSkipListSet<Pool> validPools, boolean isVolumeCompletelyFillable) {
@@ -63,13 +57,5 @@ public class PlacementService {
         if (order.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
             orderBookRepository.addOrder(order);
         }
-    }
-
-    private JsonObject formatOrderConfirmation(String orderId, Boolean isPlaced) {
-        JsonObject orderConfirmation = new JsonObject();
-        orderConfirmation.put("orderId", orderId);
-        orderConfirmation.put("placed", isPlaced);
-        orderConfirmation.put("message", "Insufficient funds");
-        return orderConfirmation;
     }
 }

@@ -1,6 +1,5 @@
 package org.valr.service;
 
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,6 @@ import org.valr.repository.OrderBookRepository;
 
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.valr.TestHelper.*;
 
@@ -47,12 +45,10 @@ class PlacementServiceTest {
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));
 
-        JsonObject response = placementService.placeLimitOrder(order);
+        placementService.placeLimitOrder(order);
 
-        verify(balanceService).reserveOnOrder(order);
         verify(tradeService).executeMatches(eq(order), any());
         verify(orderBookRepository, never()).removeOrder(order);
-        assertTrue(response.isEmpty());
     }
 
     @Test
@@ -62,9 +58,9 @@ class PlacementServiceTest {
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), false));
 
-        JsonObject response = placementService.placeLimitOrder(order);
+        placementService.placeLimitOrder(order);
 
-        assertTrue(response.isEmpty());
+        verify(balanceService).unreserveOnOrder(order);
     }
 
     @Test
@@ -74,11 +70,10 @@ class PlacementServiceTest {
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));
 
-        JsonObject response = placementService.placeLimitOrder(order);
+        placementService.placeLimitOrder(order);
 
         verify(tradeService).executeMatches(eq(order), any());
         verify(balanceService).unreserveOnOrder(order);
-        assertNotNull(response);
     }
 
     @Test
@@ -88,21 +83,9 @@ class PlacementServiceTest {
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));
 
-        JsonObject response = placementService.placeLimitOrder(order);
+        placementService.placeLimitOrder(order);
 
         verify(tradeService).executeMatches(eq(order), any());
         verify(orderBookRepository).addOrder(order);
-        assertNotNull(response);
-    }
-
-    @Test
-    void testPlaceLimitOrderInsufficientFunds() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
-        when(balanceService.reserveOnOrder(order)).thenReturn(false);
-
-        JsonObject response = placementService.placeLimitOrder(order);
-
-        assertFalse(response.getBoolean("placed"));
-        assertEquals("Insufficient funds", response.getString("message"));
     }
 }
