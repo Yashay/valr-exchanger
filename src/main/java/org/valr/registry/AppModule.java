@@ -128,8 +128,8 @@ public class AppModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public PlacementVerticle providePlacementVerticle(Router router, ObjectMapper mapper, AuthMiddleware authMiddleware, PlacementService placementService) {
-        return new PlacementVerticle(router, mapper, authMiddleware, placementService);
+    public PlacementVerticle providePlacementVerticle(ObjectMapper mapper, PlacementService placementService) {
+        return new PlacementVerticle(mapper, placementService);
     }
 
     @Provides

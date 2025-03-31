@@ -21,7 +21,7 @@ public class PlacementVerticleTest {
     void setUp() {
         Vertx vertx = Vertx.vertx();
         placementService = mock(PlacementService.class);
-        PlacementVerticle placementVerticle = new PlacementVerticle(null, null, null, placementService);
+        PlacementVerticle placementVerticle = new PlacementVerticle(null, placementService);
     }
 
     @Test
