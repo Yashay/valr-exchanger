@@ -1,5 +1,7 @@
 package org.valr.registry;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -128,5 +130,13 @@ public class AppModule extends AbstractModule {
     @Singleton
     public PlacementVerticle providePlacementVerticle(Router router, AuthMiddleware authMiddleware, PlacementService placementService) {
         return new PlacementVerticle(router, authMiddleware, placementService);
+    }
+
+    @Provides
+    @Singleton
+    public ObjectMapper provideObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 }
