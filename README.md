@@ -167,6 +167,7 @@ Tasks to be done
 - [ ] Add a debug flag to project
 - [ ] Style nitpicks need to addressed (e.g. blank lines, wild card package imports and method ordering)
 - [ ] Write unit test for PlacementVerticle (event-bus async operation involved)
+- [ ] Investigate if the event-bus can be accessed externally
 
 Project Structure
 -------
