@@ -39,6 +39,7 @@ public class ValidationMiddleware<T> {
                         .setStatusCode(400)
                         .end("Validation errors:\n" + errorMsg);
             } else {
+                context.put(object.getClass().getSimpleName(), object);
                 context.next();
             }
         } catch (Exception e) {
