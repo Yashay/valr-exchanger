@@ -141,4 +141,27 @@ public class OrderBookVerticleTest {
                     testContext.completeNow();
                 })));
     }
+
+    @Test
+    void testPlaceLimitOrderQueueFailsOnException(Vertx vertx, VertxTestContext testContext) throws JsonProcessingException {
+        JsonObject orderData = new JsonObject()
+                .put("orderId", "1")
+                .put("side", "BUY")
+                .put("exchangePair", "BTCZAR")
+                .put("timeInForce", "GTC")
+                .put("price", "50000")
+                .put("quantity", "1");
+
+        when(authMiddleware.getUserIdFromContext(any())).thenReturn("user123");
+        when(balanceService.reserveOnOrder(any())).thenReturn(true);
+        when(objectMapper.writeValueAsBytes(any(Order.class))).thenThrow(new RuntimeException());
+
+        webClient.post( "/api/orders/limit")
+                .sendJsonObject(orderData)
+                .onComplete(testContext.succeeding(response -> testContext.verify(() -> {
+                    assertEquals("Failure", response.bodyAsString());
+                    assertEquals(400, response.statusCode());
+                    testContext.completeNow();
+                })));
+    }
 }

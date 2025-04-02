@@ -24,8 +24,10 @@ public class PlacementVerticle extends AbstractVerticle {
             try {
                 Order order = objectMapper.readValue((byte[]) o.body(), Order.class);
                 placementService.placeLimitOrder(order);
+                o.reply("Success");
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                o.reply("Failed"); // TODO add error codes
+                e.printStackTrace(); // TODO add logging to the project
             }
         });
     }

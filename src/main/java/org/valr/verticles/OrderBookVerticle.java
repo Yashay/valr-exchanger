@@ -47,14 +47,15 @@ public class OrderBookVerticle extends AbstractVerticle {
 
             if (isReserved) {
                 byte[] orderBin = objectMapper.writeValueAsBytes(order);
-                vertx.eventBus().send("order.queue", orderBin);
+                vertx.eventBus().request("order.queue", orderBin);
                 context.response().setStatusCode(201).end("Created");
             } else {
                 JsonObject orderInformation = formatOrderConfirmation(order.getOrderId(), isReserved);
                 context.response().setStatusCode(400).end(orderInformation.encodePrettily());
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            context.response().setStatusCode(400).end("Failure");
+            e.printStackTrace();
         }
     }
 
