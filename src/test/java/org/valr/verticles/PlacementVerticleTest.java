@@ -14,6 +14,7 @@ import org.valr.service.PlacementService;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(VertxExtension.class)
@@ -51,6 +52,7 @@ public class PlacementVerticleTest {
 
         vertx.eventBus().request("order.queue", orderbin, reply -> {
             verify(placementService).placeLimitOrder(any(Order.class));
+            assertEquals("Success", reply.result().body());
             testContext.completeNow();
         });
     }
@@ -64,6 +66,7 @@ public class PlacementVerticleTest {
 
         vertx.eventBus().request("order.queue", corruptOrderbin, reply -> {
             verify(placementService, never()).placeLimitOrder(any(Order.class));
+            assertEquals("Failure", reply.result().body());
             testContext.completeNow();
         });
     }

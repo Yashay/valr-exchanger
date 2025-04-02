@@ -26,7 +26,7 @@ public class PlacementVerticle extends AbstractVerticle {
                 placementService.placeLimitOrder(order);
                 o.reply("Success");
             } catch (IOException e) {
-                o.reply("Failed"); // TODO add error codes
+                o.reply("Failure"); // TODO add error codes
                 e.printStackTrace(); // TODO add logging to the project
             }
         });
