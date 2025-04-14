@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.valr.model.Order;
-import org.valr.model.enums.Side;
 import org.valr.model.enums.TimeInForce;
 import org.valr.repository.OrderBookRepository;
 
@@ -40,7 +39,12 @@ class PlacementServiceTest {
 
     @Test
     void testPlaceLimitOrderFOKSuccess() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
+        Order order = Order.builder()
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.FOK)
+                .build();
+
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));
@@ -53,7 +57,12 @@ class PlacementServiceTest {
 
     @Test
     void testPlaceLimitOrderFOKFailNotFillable() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.FOK);
+        Order order = Order.builder()
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.FOK)
+                .build();
+
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), false));
@@ -65,7 +74,12 @@ class PlacementServiceTest {
 
     @Test
     void testPlaceLimitOrderIOCSuccess() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.IOC);
+        Order order = Order.builder()
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.IOC)
+                .build();
+
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));
@@ -78,7 +92,12 @@ class PlacementServiceTest {
 
     @Test
     void testPlaceLimitOrderGTCSuccess() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), TimeInForce.GTC);
+        Order order = Order.builder()
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
+
         when(balanceService.reserveOnOrder(order)).thenReturn(true);
         when(matchingService.getPoolsForPartialOrImmediateMatch(order))
                 .thenReturn(Pair.of(new ConcurrentSkipListSet<>(), true));

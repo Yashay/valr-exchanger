@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.valr.model.Order;
 import org.valr.model.Pool;
 import org.valr.model.enums.Side;
+import org.valr.model.enums.TimeInForce;
 import org.valr.repository.OrderBookRepository;
 
 import java.math.BigDecimal;
@@ -29,7 +30,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchFullMatch() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
         Pool pool = createPool(Side.SELL, NUMBER(50000), NUMBER(1));
         ConcurrentSkipListMap<BigDecimal, Pool> sellPools = new ConcurrentSkipListMap<>();
         sellPools.put(NUMBER(50000), pool);
@@ -44,7 +50,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchPartialMatch() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(2));
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(2))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
         Pool pool = createPool(Side.SELL, NUMBER(50000), NUMBER(1));
         ConcurrentSkipListMap<BigDecimal, Pool> sellPools = new ConcurrentSkipListMap<>();
         sellPools.put(NUMBER(50000), pool);
@@ -59,7 +70,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchNoMatch() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         when(orderBookRepository.getPoolsOppositeSide(Side.BUY)).thenReturn(new ConcurrentSkipListMap<>());
 
@@ -71,7 +87,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchVolumeAlreadyFilled() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(0));
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(0))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         when(orderBookRepository.getPoolsOppositeSide(Side.BUY))
                 .thenReturn(new ConcurrentSkipListMap<>());
@@ -84,7 +105,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchBuyPriceTooLow() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
         Pool pool = createPool(Side.SELL, NUMBER(51000), NUMBER(1));
 
         ConcurrentSkipListMap<BigDecimal, Pool> sellPools = new ConcurrentSkipListMap<>();
@@ -100,8 +126,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchSellPriceTooHigh() {
-        Order takerOrder = createOrder(Side.SELL, NUMBER(50000), NUMBER(1));
-
+        Order takerOrder = Order.builder()
+                .side(Side.SELL)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
         Pool pool = createPool(Side.BUY, NUMBER(49000), NUMBER(1));
 
         ConcurrentSkipListMap<BigDecimal, Pool> buyPools = new ConcurrentSkipListMap<>();
@@ -117,8 +147,12 @@ class MatchingServiceTest {
 
     @Test
     void testGetPoolsForPartialOrImmediateMatchTakerBuyFullMatchThreeSellPools() {
-        Order takerOrder = createOrder(Side.BUY, NUMBER(52000), NUMBER(20));
-
+        Order takerOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(20))
+                .price(NUMBER(52000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
         Pool pool1 = createPool(Side.SELL, NUMBER(50000), NUMBER(10));
         Pool pool2 = createPool(Side.SELL, NUMBER(51000), NUMBER(10));
         Pool pool3 = createPool(Side.SELL, NUMBER(52000), NUMBER(10));

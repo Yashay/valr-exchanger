@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.valr.model.Balance;
 import org.valr.model.Order;
 import org.valr.model.enums.Currency;
+import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
 import org.valr.repository.BalanceRepository;
 
@@ -15,7 +16,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.valr.TestHelper.NUMBER;
-import static org.valr.TestHelper.createOrder;
 
 class BalanceServiceTest {
 
@@ -99,7 +99,13 @@ class BalanceServiceTest {
 
     @Test
     void testReserveOnOrderBuyOrder() {
-        Order order = createOrder("userId", Side.BUY, NUMBER(100), NUMBER(10));
+        Order order = Order.builder()
+                .userId("userId")
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(100))
+                .quantity(NUMBER(10))
+                .build();
 
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
 
@@ -111,7 +117,13 @@ class BalanceServiceTest {
 
     @Test
     void testUnreserveOnOrderBuyOrder() {
-        Order order = createOrder("userId", Side.BUY, NUMBER(500), NUMBER(2));
+        Order order = Order.builder()
+                .userId("userId")
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(500))
+                .quantity(NUMBER(2))
+                .build();
 
         balanceService.add("userId", Currency.ZAR, NUMBER(1000));
         balanceService.reserveOnOrder(order);
@@ -125,8 +137,20 @@ class BalanceServiceTest {
 
     @Test
     void testAdjustBalancesForTradeBuySide() {
-        Order takerOrder = createOrder("taker", Side.BUY, NUMBER(1000), NUMBER(2));
-        Order makerOrder = createOrder("maker", Side.SELL, NUMBER(1000), NUMBER(2));
+        Order takerOrder = Order.builder()
+                .userId("taker")
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(1000))
+                .quantity(NUMBER(2))
+                .build();
+        Order makerOrder = Order.builder()
+                .userId("maker")
+                .side(Side.SELL)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(1000))
+                .quantity(NUMBER(2))
+                .build();
 
         Balance takerBalance = mockUserBalance("taker", NUMBER(0), NUMBER(2000));
         Balance makerBalance = mockUserBalance("maker", NUMBER(2), NUMBER(0));
@@ -139,8 +163,20 @@ class BalanceServiceTest {
 
     @Test
     void testAdjustBalancesForTradeSellSide() {
-        Order takerOrder = createOrder("taker", Side.SELL, NUMBER(1000), NUMBER(2));
-        Order makerOrder = createOrder("maker", Side.BUY, NUMBER(1000), NUMBER(2));
+        Order takerOrder = Order.builder()
+                .userId("taker")
+                .side(Side.SELL)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(1000))
+                .quantity(NUMBER(2))
+                .build();
+        Order makerOrder = Order.builder()
+                .userId("maker")
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .price(NUMBER(1000))
+                .quantity(NUMBER(2))
+                .build();
 
         Balance takerBalance = mockUserBalance("taker", NUMBER(2), NUMBER(0));
         Balance makerBalance = mockUserBalance("maker", NUMBER(0), NUMBER(2000));
