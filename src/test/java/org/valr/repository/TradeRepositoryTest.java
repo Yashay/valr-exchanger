@@ -10,21 +10,32 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.NUMBER;
-import static org.valr.TestHelper.createOrder;
 
 class TradeRepositoryTest {
 
     private TradeRepository tradeRepository;
+    private Order sellerOrder;
+    private Order buyerOrder;
 
     @BeforeEach
     void setUp() {
         tradeRepository = new TradeRepository();
+        buyerOrder = Order.builder()
+                .userId("user1")
+                .side(Side.BUY)
+                .quantity(NUMBER(10))
+                .price(NUMBER(50000))
+                .build();
+        sellerOrder = Order.builder()
+                .userId("user2")
+                .side(Side.SELL)
+                .quantity(NUMBER(10))
+                .price(NUMBER(50000))
+                .build();
     }
 
     @Test
     void testAddTradeValidTradeShouldBeStored() {
-        Order buyerOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
-        Order sellerOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
         Trade trade = new Trade(buyerOrder, sellerOrder, NUMBER(50000), NUMBER(10));
 
         tradeRepository.addTrade(trade);
@@ -47,8 +58,6 @@ class TradeRepositoryTest {
 
     @Test
     void testGetTradeHistoryExistingTradesShouldReturnCorrectTrades() {
-        Order buyerOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
-        Order sellerOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
         Trade trade = new Trade(buyerOrder, sellerOrder, NUMBER(50000), NUMBER(10));
 
         tradeRepository.addTrade(trade);
@@ -60,12 +69,19 @@ class TradeRepositoryTest {
 
     @Test
     void testAddTradeMultipleTradesShouldBeStoredForAllUsers() {
-        Order user1BuyOrder = createOrder("user1", Side.BUY, NUMBER(50000), NUMBER(10));
-        Order user2SellOrder = createOrder("user2", Side.SELL, NUMBER(50000), NUMBER(10));
-        Trade tradeUser1User2 = new Trade(user1BuyOrder, user2SellOrder, NUMBER(50000), NUMBER(10));
-
-        Order user1BuyOrderSecond = createOrder("user1", Side.BUY, NUMBER(55000), NUMBER(10));
-        Order user3SellOrder = createOrder("user3", Side.SELL, NUMBER(55000), NUMBER(10));
+        Trade tradeUser1User2 = new Trade(buyerOrder, sellerOrder, NUMBER(50000), NUMBER(10));
+        Order user1BuyOrderSecond = Order.builder()
+                .userId("user1")
+                .side(Side.BUY)
+                .quantity(NUMBER(10))
+                .price(NUMBER(55000))
+                .build();
+        Order user3SellOrder = Order.builder()
+                .userId("user3")
+                .side(Side.SELL)
+                .quantity(NUMBER(10))
+                .price(NUMBER(55000))
+                .build();
         Trade tradeUser1User3 = new Trade(user1BuyOrderSecond, user3SellOrder, NUMBER(55000), NUMBER(10));
 
         tradeRepository.addTrade(tradeUser1User2);

@@ -7,26 +7,45 @@ import org.valr.model.Pool;
 import org.valr.model.enums.Side;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.NUMBER;
-import static org.valr.TestHelper.createOrder;
 
 class OrderBookRepositoryTest {
 
     private OrderBookRepository orderBookRepository;
+    private Order sellOrder;
+    private Order buyOrder;
+    private Order buyOrder2;
 
     @BeforeEach
     void setUp() {
         orderBookRepository = new OrderBookRepository();
+        buyOrder = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(10))
+                .price(NUMBER(50000))
+                .timestamp(Instant.now())
+                .build();
+        sellOrder = Order.builder()
+                .side(Side.SELL)
+                .quantity(NUMBER(10))
+                .price(NUMBER(50000))
+                .timestamp(Instant.now())
+                .build();
+        buyOrder2 = Order.builder()
+                .side(Side.BUY)
+                .quantity(NUMBER(10))
+                .price(NUMBER(50000))
+                .timestamp(Instant.now())
+                .build();
     }
 
     @Test
     void testAddOrderBuyOrderShouldBeAddedToBuyPool() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
-
         orderBookRepository.addOrder(buyOrder);
 
         Pool buyPool = orderBookRepository.getPoolsMapBySide(Side.BUY).get(buyOrder.getPrice());
@@ -36,8 +55,6 @@ class OrderBookRepositoryTest {
 
     @Test
     void testAddOrderSellOrderShouldBeAddedToSellPool() {
-        Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
-
         orderBookRepository.addOrder(sellOrder);
 
         Pool sellPool = orderBookRepository.getPoolsMapBySide(Side.SELL).get(sellOrder.getPrice());
@@ -47,9 +64,7 @@ class OrderBookRepositoryTest {
 
     @Test
     void testRemoveOrderOrderExistsShouldBeRemoved() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
-
         orderBookRepository.removeOrder(buyOrder);
 
         Pool buyPool = orderBookRepository.getPoolsMapBySide(Side.BUY).get(buyOrder.getPrice());
@@ -58,8 +73,6 @@ class OrderBookRepositoryTest {
 
     @Test
     void testRemoveOrderOrderNotInPoolShouldNotCauseError() {
-        Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
-
         orderBookRepository.removeOrder(sellOrder);
 
         Pool sellPool = orderBookRepository.getPoolsMapBySide(Side.SELL).get(sellOrder.getPrice());
@@ -68,7 +81,6 @@ class OrderBookRepositoryTest {
     
     @Test
     void testGetPoolByOrderShouldReturnCorrectPool() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
 
         Optional<Pool> poolOptional = orderBookRepository.getPoolByOrder(buyOrder);
@@ -79,8 +91,6 @@ class OrderBookRepositoryTest {
 
     @Test
     void testGetPoolsOppositeSideShouldReturnCorrectPool() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
-        Order sellOrder = createOrder("userId", Side.SELL, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
         orderBookRepository.addOrder(sellOrder);
 
@@ -92,7 +102,6 @@ class OrderBookRepositoryTest {
 
     @Test
     void testRemoveOrderWhenPoolIsEmptyShouldRemovePool() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
         orderBookRepository.removeOrder(buyOrder);
 
@@ -103,10 +112,7 @@ class OrderBookRepositoryTest {
 
     @Test
     void testRemoveOrderWhenOrderIsLastInPoolShouldRemovePool() {
-        Order buyOrder = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder);
-
-        Order buyOrder2 = createOrder("userId", Side.BUY, NUMBER(50000), NUMBER(10));
         orderBookRepository.addOrder(buyOrder2);
         orderBookRepository.removeOrder(buyOrder);
 
