@@ -31,7 +31,6 @@ public class OrderBookVerticleTest {
 
     private OrderBookService orderBookService;
     private BalanceService balanceService;
-    private PlacementService placementService;
     private AuthMiddleware authMiddleware;
     private ObjectMapper objectMapper;
     private Router router;
@@ -66,7 +65,7 @@ public class OrderBookVerticleTest {
     }
 
     @Test
-    void testGetOrderBookSnapshotSuccess(Vertx vertx, VertxTestContext testContext) {
+    void testGetOrderBookSnapshotSuccess(VertxTestContext testContext) {
         JsonObject mockSnapshot = new JsonObject().put("bids", "[]").put("asks", "[]");
         when(orderBookService.getOrderBookSnapshot()).thenReturn(mockSnapshot);
 
@@ -81,7 +80,7 @@ public class OrderBookVerticleTest {
 
 
     @Test
-    void testPlaceLimitOrderInQueueSuccess(Vertx vertx, VertxTestContext testContext) throws JsonProcessingException {
+    void testPlaceLimitOrderInQueueSuccess(VertxTestContext testContext) {
         JsonObject orderData = new JsonObject()
                 .put("side", "BUY")
                 .put("exchangePair", "BTCZAR")
@@ -104,7 +103,7 @@ public class OrderBookVerticleTest {
     }
 
     @Test
-    void testPlaceLimitOrderInQueueValidationFails(Vertx vertx, VertxTestContext testContext) {
+    void testPlaceLimitOrderInQueueValidationFails(VertxTestContext testContext) {
         JsonObject invalidOrder = new JsonObject().put("side", "BUY");
 
         webClient.post( "/api/orders/limit")
@@ -116,7 +115,7 @@ public class OrderBookVerticleTest {
     }
 
     @Test
-    void testPlaceLimitOrderQueueFails(Vertx vertx, VertxTestContext testContext) {
+    void testPlaceLimitOrderQueueFails(VertxTestContext testContext) {
         JsonObject orderData = new JsonObject()
                 .put("orderId", "1")
                 .put("side", "BUY")
@@ -142,7 +141,7 @@ public class OrderBookVerticleTest {
     }
 
     @Test
-    void testPlaceLimitOrderQueueFailsOnException(Vertx vertx, VertxTestContext testContext) throws JsonProcessingException {
+    void testPlaceLimitOrderQueueFailsOnException(VertxTestContext testContext) throws JsonProcessingException {
         JsonObject orderData = new JsonObject()
                 .put("orderId", "1")
                 .put("side", "BUY")
