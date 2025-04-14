@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.*;
 
@@ -22,7 +24,14 @@ class PoolTest {
     @Test
     void testAddOrder() {
         Pool pool = new Pool(Side.SELL, ExchangePair.BTCZAR, NUMBER(50000));
-        Order order = createOrder(Side.SELL, NUMBER(50000), NUMBER(1));
+        Order order = Order.builder()
+                .side(Side.SELL)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timestamp(Instant.now())
+                .sequence(1L)
+                .build();
 
         pool.addOrder(order);
 
@@ -33,9 +42,16 @@ class PoolTest {
     @Test
     void testRemoveOrder() {
         Pool pool = new Pool(Side.SELL, ExchangePair.BTCZAR, NUMBER(50000));
-        Order order = createOrder(Side.SELL, NUMBER(50000), NUMBER(1));
-        pool.addOrder(order);
+        Order order = Order.builder()
+                .side(Side.SELL)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timestamp(Instant.now())
+                .sequence(1L)
+                .build();
 
+        pool.addOrder(order);
         pool.removeOrder(order);
 
         assertEquals(NUMBER(0), pool.getVolume().get());

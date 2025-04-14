@@ -1,5 +1,6 @@
 package org.valr.model;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
@@ -11,11 +12,29 @@ import static org.valr.TestHelper.*;
 
 class TradeTest {
 
+    private Order takerOrder;
+    private Order makerOrder;
+
+    @BeforeEach
+    void setUp() {
+        takerOrder = Order.builder()
+                .userId("takerId")
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .build();
+        makerOrder = Order.builder()
+                .userId("makerId")
+                .side(Side.SELL)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .build();
+    }
+
     @Test
     void testTradeInitialization() {
-        Order takerOrder = createOrder("takerId", Side.BUY, NUMBER(50000), NUMBER(1));
-        Order makerOrder = createOrder("makerId", Side.SELL, NUMBER(50000), NUMBER(1));
-
         Trade trade = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1));
 
         assertNotNull(trade.getTradeId());
@@ -34,29 +53,26 @@ class TradeTest {
 
     @Test
     void testTradeComparison() {
-        Trade trade1 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(10));
-        Trade trade2 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(20));
+        Trade trade1 = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(10));
+        Trade trade2 = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(20));
 
         assertTrue(trade1.compareTo(trade2) < 0 || trade1.compareTo(trade2) > 0);
 
-        Trade laterTrade = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(30));
+        Trade laterTrade = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(30));
 
         assertTrue(trade1.compareTo(laterTrade) < 0);
     }
 
     @Test
     void testTradeEquality() {
-        Trade trade1 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1));
-        Trade trade2 = new Trade(createOrder(Side.BUY, NUMBER(50000), NUMBER(1)), createOrder(Side.SELL, NUMBER(50000), NUMBER(1)), NUMBER(50000), NUMBER(1));
+        Trade trade1 = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(10));
+        Trade trade2 = new Trade(takerOrder, makerOrder, NUMBER(50000), NUMBER(1), Instant.ofEpochSecond(20));
 
         assertNotEquals(trade1, trade2);
     }
 
     @Test
     void testInvalidTrade() {
-        Order takerOrder = createOrder("takerId", Side.BUY, NUMBER(50000), NUMBER(1));
-        Order makerOrder = createOrder("makerId", Side.SELL, NUMBER(50000), NUMBER(1));
-
         assertThrows(NullPointerException.class, () -> new Trade(null, makerOrder, NUMBER(50000), NUMBER(1)));
         assertThrows(NullPointerException.class, () -> new Trade(takerOrder, null, NUMBER(50000), NUMBER(1)));
     }

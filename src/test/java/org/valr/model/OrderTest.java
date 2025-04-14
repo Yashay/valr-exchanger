@@ -6,13 +6,15 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.valr.model.enums.ExchangePair;
 import org.valr.model.enums.Side;
+import org.valr.model.enums.TimeInForce;
 
+import java.time.Instant;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.valr.TestHelper.NUMBER;
-import static org.valr.TestHelper.createOrder;
 
 class OrderTest {
 
@@ -26,7 +28,13 @@ class OrderTest {
 
     @Test
     void testValidOrder() {
-        Order order = createOrder(Side.BUY, NUMBER(500000), NUMBER(1));
+        Order order = Order.builder()
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         assertTrue(violations.isEmpty(), "Order should be valid");
@@ -34,7 +42,13 @@ class OrderTest {
 
     @Test
     void testNullSide() {
-        Order order = createOrder(null, NUMBER(500000), NUMBER(1));
+        Order order = Order.builder()
+                .side(null)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         assertFalse(violations.isEmpty());
@@ -42,7 +56,13 @@ class OrderTest {
 
     @Test
     void testInvalidPrice() {
-        Order order = createOrder(Side.BUY, NUMBER(0), NUMBER(1));
+        Order order = Order.builder()
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(1))
+                .price(NUMBER(0))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         assertFalse(violations.isEmpty());
@@ -51,7 +71,13 @@ class OrderTest {
 
     @Test
     void testInvalidQuantity() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(0));
+        Order order = Order.builder()
+                .side(Side.BUY)
+                .exchangePair(ExchangePair.BTCZAR)
+                .quantity(NUMBER(0))
+                .price(NUMBER(50000))
+                .timeInForce(TimeInForce.GTC)
+                .build();
 
         Set<ConstraintViolation<Order>> violations = validator.validate(order);
         assertFalse(violations.isEmpty());
@@ -60,7 +86,10 @@ class OrderTest {
 
     @Test
     void testReduceQuantity() {
-        Order order = createOrder(Side.BUY, NUMBER(50000), NUMBER(1));
+        Order order = Order.builder()
+                .price(NUMBER(50000))
+                .quantity(NUMBER(1))
+                .build();
 
         order.reduceQuantity(NUMBER(4));
         assertEquals(NUMBER(-3), order.getQuantity());
@@ -71,15 +100,30 @@ class OrderTest {
 
     @Test
     void testOrderComparison() {
-        Order order1 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 10);
-        Order order2 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 20);
+        Order order1 = Order.builder()
+                .side(Side.BUY)
+                .price(NUMBER(50000))
+                .quantity(NUMBER(1))
+                .timestamp(Instant.ofEpochMilli(100000))
+                .sequence(1L)
+                .build();
+        Order order2 = Order.builder()
+                .side(Side.BUY)
+                .price(NUMBER(50000))
+                .quantity(NUMBER(1))
+                .timestamp(Instant.ofEpochMilli(200000))
+                .sequence(2L)
+                .build();
+        Order order3 = Order.builder()
+                .side(Side.BUY)
+                .price(NUMBER(50000))
+                .quantity(NUMBER(1))
+                .timestamp(Instant.ofEpochMilli(300000))
+                .sequence(3L)
+                .build();
 
         assertEquals(-1, order1.compareTo(order2));
         assertEquals(1, order2.compareTo(order1));
-
-        Order order3 = createOrder(Side.BUY, NUMBER(50000), NUMBER(1), 30);
-        order3.setTimestamp(order1.getTimestamp());
-
         assertEquals(-1, order1.compareTo(order3));
     }
 
