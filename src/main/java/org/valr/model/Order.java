@@ -17,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Order implements Comparable<Order> {
     private String orderId = UUID.randomUUID().toString();
 
