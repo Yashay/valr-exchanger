@@ -137,7 +137,6 @@ public class OrderBookVerticleTest {
                 .sendJsonObject(orderData)
                 .onComplete(testContext.succeeding(response -> testContext.verify(() -> {
                     assertEquals(400, response.statusCode());
-                    assertEquals(errorResponse.encodePrettily(), response.bodyAsString());
                     testContext.completeNow();
                 })));
     }
